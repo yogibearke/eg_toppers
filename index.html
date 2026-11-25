@@ -1,0 +1,3056 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EG_toppers Stock Dashboard</title>
+    
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Premium CSS -->
+    <style>
+        :root {
+            --bg-cosmic: #f4f6fa;
+            --bg-body: #f4f6fa;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --border-glass: #e2e8f0;
+            --border-subtle: #cbd5e1;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            
+            /* EasyGrowth Primary Colors */
+            --color-primary: #007bff;
+            --color-primary-hover: #0056b3;
+            --color-warning: #d97706;
+            --color-success: #16a34a;
+            --color-info: #0284c7;
+            --color-accent: #7c3aed;
+            
+            --glow-primary: 0 1px 4px rgba(0, 123, 255, 0.25);
+            --glow-warning: 0 1px 4px rgba(217, 119, 6, 0.25);
+            --glow-success: 0 1px 4px rgba(22, 163, 74, 0.25);
+            --glow-info: 0 1px 4px rgba(2, 132, 199, 0.25);
+            --glow-accent: 0 1px 4px rgba(124, 58, 237, 0.25);
+            --drawer-width: 0px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        /* Scrollbar styling for Webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 32px;
+            border-bottom: 1px solid var(--border-glass);
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-title i {
+            font-size: 26px;
+            color: var(--color-primary);
+        }
+
+        .header-title h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #0f172a;
+            background: none;
+            -webkit-text-fill-color: #0f172a;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            padding: 20px 28px;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0;
+            width: 100%;
+            box-sizing: border-box;
+            transition: padding-right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main-container.drawer-open {
+            padding: 14px 16px;
+            padding-right: calc(var(--drawer-width, 50vw) + 16px);
+        }
+
+        .grid-panel {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .main-container.drawer-open th {
+            padding: 8px 6px;
+            font-size: 11px;
+        }
+
+        .main-container.drawer-open td {
+            padding: 7px 6px;
+            font-size: 12px;
+        }
+
+        .main-container.drawer-open .controls-card {
+            padding: 12px 16px;
+        }
+
+        .is-resizing, .is-resizing * {
+            user-select: none !important;
+        }
+
+        .is-resizing .main-container,
+        .is-resizing .drawer-panel {
+            transition: none !important;
+        }
+
+        .is-resizing iframe {
+            pointer-events: none !important;
+        }
+
+        /* Dashboard controls card */
+        .controls-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+            max-width: 450px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 16px 10px 44px;
+            color: var(--text-primary);
+            font-size: 13.5px;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+        }
+
+        .filters-wrapper {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .filter-select {
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 9px 16px;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-select:hover, .filter-select:focus {
+            border-color: var(--color-primary);
+        }
+
+        .filter-select option {
+            background: #ffffff;
+            color: var(--text-primary);
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            background: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+            transition: all 0.2s;
+        }
+
+        .toggle-container:hover {
+            background: #e2e8f0;
+        }
+
+        .toggle-switch {
+            width: 40px;
+            height: 22px;
+            background: #cbd5e1;
+            border-radius: 20px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+
+        .toggle-container.active .toggle-switch {
+            background: var(--color-primary);
+        }
+
+        .toggle-container.active .toggle-switch::after {
+            left: 21px;
+        }
+
+        .toggle-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Screener & Dynamic Filters Panel */
+        .screener-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .screener-top-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .timeframe-pill-group {
+            display: inline-flex;
+            background: #e2e8f0;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .timeframe-pill {
+            padding: 5px 13px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+            background: transparent;
+        }
+
+        .timeframe-pill:hover {
+            color: #0f172a;
+        }
+
+        .timeframe-pill.active {
+            background: var(--color-primary);
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 123, 255, 0.3);
+        }
+
+        .screener-params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .param-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .param-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .param-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .any-btn {
+            background: #e2e8f0;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            border-radius: 6px;
+            font-size: 10.5px;
+            font-weight: 600;
+            padding: 2px 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .any-btn:hover {
+            color: #0f172a;
+            background: #cbd5e1;
+        }
+
+        .any-btn.active {
+            background: var(--color-primary);
+            color: #ffffff;
+            border-color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        .param-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .param-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 7px 26px 7px 10px;
+            color: #0f172a;
+            font-size: 13.5px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .param-input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+        }
+
+        .param-input.is-any {
+            color: #94a3b8 !important;
+            font-style: italic;
+        }
+
+        .param-unit {
+            position: absolute;
+            right: 8px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .screener-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding-top: 4px;
+        }
+
+        .badge-results {
+            background: rgba(22, 163, 74, 0.1);
+            color: #16a34a;
+            border: 1px solid rgba(22, 163, 74, 0.25);
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-tickers {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            border: 1px solid rgba(0, 123, 255, 0.25);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-copy-tickers:hover {
+            background: var(--color-primary);
+            color: #ffffff;
+        }
+
+        .btn-refresh-live {
+            background: #f1f5f9;
+            color: var(--text-primary);
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-refresh-live:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .save-indicator {
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: opacity 0.3s;
+        }
+
+        .save-indicator.saved {
+            color: #16a34a;
+        }
+
+        /* Table Card */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 210px);
+            min-width: 0;
+            width: 100%;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            overflow-y: auto;
+            flex: 1;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 11px 12px;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+            cursor: pointer;
+            user-select: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            color: #0f172a;
+        }
+
+        th i {
+            margin-left: 5px;
+            font-size: 10px;
+        }
+
+        tr {
+            border-bottom: 1px solid #f1f5f9;
+            background: #ffffff;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        tr:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        tr.selected {
+            background: #e8f2ff;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        td {
+            padding: 9px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e293b;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        td.bold-symbol {
+            font-weight: 700;
+            color: var(--color-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+        }
+
+        td.name-cell {
+            color: #475569;
+            font-size: 12.5px;
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        td.company-cell {
+            max-width: 240px;
+            min-width: 140px;
+            white-space: normal;
+        }
+
+        .company-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .company-industry-sub {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: none;
+        }
+
+        /* Responsive Industry Column Handling: In split screen (.drawer-open) or when table width < 1200px, Industry is placed under Company */
+        .drawer-open .col-industry,
+        .compact-table-mode .col-industry {
+            display: none !important;
+        }
+
+        .drawer-open .company-industry-sub,
+        .compact-table-mode .company-industry-sub {
+            display: block !important;
+        }
+
+        .drawer-open td.company-cell,
+        .compact-table-mode td.company-cell {
+            max-width: 155px;
+            min-width: 110px;
+        }
+
+        .drawer-open .company-name,
+        .compact-table-mode .company-name {
+            font-size: 12.5px;
+            max-width: 150px;
+        }
+
+        .drawer-open .company-industry-sub,
+        .compact-table-mode .company-industry-sub {
+            font-size: 10.5px;
+            max-width: 150px;
+        }
+
+        .drawer-open td.bold-symbol {
+            font-size: 13px;
+        }
+
+        /* Badge and value indicator styles */
+        .indicator-val {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Stock side details drawer */
+        .drawer-panel {
+            width: 50vw;
+            min-width: 500px;
+            background: #ffffff;
+            border-left: 1px solid var(--border-glass);
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 65px);
+            position: fixed;
+            right: 0;
+            top: 65px;
+            z-index: 90;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .drawer-panel.open {
+            transform: translateX(0);
+        }
+
+        .drawer-resizer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 100;
+        }
+
+        .drawer-resizer:hover, .drawer-resizer:active {
+            background: rgba(0, 123, 255, 0.4);
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .drawer-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-glass);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-title-symbol {
+            font-size: 22px;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            color: #0f172a;
+        }
+
+        .drawer-title-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: 1px solid var(--border-glass);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+            transform: rotate(90deg);
+        }
+
+        .drawer-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-icon-btn {
+            background: #f1f5f9;
+            border: 1px solid var(--border-glass);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .header-icon-btn:hover {
+            background: #e2e8f0;
+            color: var(--color-primary);
+        }
+
+        /* Drawer Tabs */
+        .drawer-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 8px 20px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .drawer-tab-btn {
+            background: #f8fafc;
+            border: 1px solid var(--border-glass);
+            border-radius: 6px;
+            padding: 6px 14px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .drawer-tab-btn:hover {
+            background: #e2e8f0;
+            color: var(--text-primary);
+        }
+
+        .drawer-tab-btn.active {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 123, 255, 0.25);
+        }
+
+        /* Live EasyGrowth Panel */
+        .drawer-easygrowth-panel {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .easygrowth-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 18px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border-glass);
+            gap: 12px;
+        }
+
+        .easygrowth-url-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid var(--border-glass);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .easygrowth-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-eg-tool {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border-glass);
+            background: #ffffff;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-eg-tool:hover {
+            background: var(--color-primary);
+            border-color: var(--color-primary);
+            color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 123, 255, 0.25);
+        }
+
+        .iframe-fallback-banner {
+            display: none;
+        }
+
+        .easygrowth-iframe-wrapper {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            position: relative;
+            background: #ffffff;
+        }
+
+        #easygrowthIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Header Window Sync Button */
+        .btn-sync-window {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: var(--color-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-sync-window:hover, .btn-sync-window.active {
+            background: var(--color-primary);
+            color: #ffffff;
+            box-shadow: var(--glow-primary);
+            border-color: var(--color-primary);
+        }
+
+        .row-eg-link {
+            color: var(--text-secondary);
+            font-size: 11px;
+            opacity: 0.5;
+            transition: all 0.2s;
+            text-decoration: none;
+            padding: 2px 4px;
+        }
+
+        .row-eg-link:hover {
+            color: var(--color-primary);
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        tr:hover .row-eg-link {
+            opacity: 0.9;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 580px;
+            max-height: 85vh;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-glass);
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            color: var(--text-primary);
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .profile-manage-item {
+            background: #ffffff;
+            border: 1px solid var(--border-glass);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .profile-manage-item:hover {
+            border-color: var(--color-primary);
+            background: #f8fafc;
+        }
+
+        .drawer-body {
+            overflow-y: auto;
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: #ffffff;
+        }
+
+        /* Visual Ring Gauges for Indicators */
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 540px) {
+            .indicators-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .indicators-grid .gauge-container-top {
+                grid-column: span 2 !important;
+            }
+        }
+
+        .gauge-container {
+            background: #f8fafc;
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .gauge-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .ring-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+        }
+
+        .ring-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: #e2e8f0;
+            stroke-width: 6;
+        }
+
+        .ring-fill {
+            fill: none;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 220;
+            stroke-dashoffset: 220;
+            transition: stroke-dashoffset 0.8s ease-in-out;
+        }
+
+        .ring-val {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15px;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            color: #0f172a;
+        }
+
+        /* Detail stats block */
+        .stats-block {
+            background: #f8fafc;
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stats-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 8px;
+            margin-bottom: 4px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-val {
+            font-weight: 700;
+            color: #0f172a;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Dynamic Description Card */
+        .desc-card {
+            background: #eff6ff;
+            border-left: 4px solid var(--color-primary);
+            border-radius: 0 10px 10px 0;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #1e293b;
+        }
+
+        .desc-heading {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chart-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 180px;
+            width: 100%;
+        }
+
+        .badge-sector {
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-secondary);
+            display: inline-block;
+        }
+
+        .no-data-msg {
+            text-align: center;
+            padding: 48px;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <i class="fa-solid fa-chart-line"></i>
+            <div>
+                <h1>EG_toppers Stock Dashboard</h1>
+                <p>High-Fidelity Real-time Calculations & Deep comparative Analysis</p>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button class="btn-sync-window" id="btnSyncWindow" onclick="toggleWindowSync()" title="Open en synchroniseer EasyGrowth op een 2e scherm of apart tabblad">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> <span id="syncBtnText">Koppel 2e Scherm</span>
+            </button>
+            <button class="btn-refresh-live" id="btnLiveSync" onclick="refreshLiveApiData()" title="Ververs alle 2.089 aandelen live via de EasyGrowth API">
+                <i class="fa-solid fa-arrows-rotate"></i> <span id="refreshBtnText">Live Sync API</span>
+            </button>
+            <span class="badge-sector" style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 12px; font-size: 12px;">
+                <i class="fa-solid fa-cloud me-1"></i> EasyGrowth Cloud (2.089 Aandelen)
+            </span>
+        </div>
+    </header>
+
+    <div class="main-container" id="mainContainer">
+        
+        <!-- Main Grid Panel -->
+        <div class="grid-panel">
+            
+            <!-- Interactive Smart Screener Card -->
+            <div class="screener-card">
+                <!-- Top Row: Search, Industry, Presets & Timeframe -->
+                <div class="screener-top-row">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="search-input" id="searchInput" placeholder="Zoek op symbool, naam, sector...">
+                    </div>
+
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <select class="filter-select" id="industryFilter">
+                            <option value="">Alle Sectoren</option>
+                        </select>
+
+                        <!-- Timeframe selector (1j, 3j, 5j, 10j) -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; font-weight: 700; color: var(--text-secondary);">TIJDFRAME:</span>
+                            <div class="timeframe-pill-group" id="timeframeGroup">
+                                <button class="timeframe-pill" data-tf="1y" onclick="setTimeframe('1y')">1J</button>
+                                <button class="timeframe-pill" data-tf="3y" onclick="setTimeframe('3y')">3J</button>
+                                <button class="timeframe-pill" data-tf="5y" onclick="setTimeframe('5y')">5J</button>
+                                <button class="timeframe-pill active" data-tf="10y" onclick="setTimeframe('10y')">10J</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profiles & Presets Bar with Dropdown -->
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--border-glass); padding-top: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="font-size: 11.5px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-layer-group" style="color: var(--color-primary);"></i> PROFIEL:
+                        </span>
+                        
+                        <!-- Dropdown List for Profiles -->
+                        <div style="position: relative; display: inline-flex; align-items: center;">
+                            <select class="filter-select" id="profileSelect" onchange="onProfileSelectChange(this.value)" style="padding: 8px 34px 8px 14px; font-size: 13.5px; font-weight: 600; min-width: 260px; border-radius: 8px; background: #eff6ff; border-color: #bfdbfe; color: var(--color-primary); cursor: pointer;">
+                                <!-- Dynamically populated by JS -->
+                            </select>
+                        </div>
+
+                        <button class="btn-eg-tool" onclick="openSaveProfileModal()" title="Sla huidige filterinstellingen op als nieuw profiel" style="padding: 7px 13px; font-size: 12px; background: #f0fdf4; border-color: #bbf7d0; color: #16a34a;">
+                            <i class="fa-solid fa-floppy-disk"></i> Profiel Opslaan
+                        </button>
+
+                        <button class="btn-eg-tool" onclick="openManageProfilesModal()" title="Beheer, bewerk of verwijder profielen in het lijstje" style="padding: 7px 12px; font-size: 12px;">
+                            <i class="fa-solid fa-gear"></i> Beheer Lijst
+                        </button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12.5px; color: var(--text-secondary); user-select: none;">
+                            <input type="checkbox" id="chkRequireFullHistory" onchange="onParamChange()" style="cursor: pointer; accent-color: var(--color-success);" checked>
+                            <span id="labelRequireFullHistory" style="color: #16a34a; font-weight: 600;">Alleen bedrijven met >= 10 jaar historie</span>
+                        </label>
+
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12.5px; color: var(--text-secondary); user-select: none;">
+                            <input type="checkbox" id="chkExcludeCyclical" onchange="onParamChange()" style="cursor: pointer; accent-color: var(--color-primary);" checked>
+                            <span>Cyclische sectoren uitsluiten</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Parameters Grid with 'Any' Options -->
+                <div class="screener-params-grid">
+                    <!-- ROIC -->
+                    <div class="param-box">
+                        <div class="param-header">
+                            <span class="param-label">Min. ROIC (5j)</span>
+                            <button class="any-btn" id="anyBtnRoic" onclick="toggleAny('roic')">Any</button>
+                        </div>
+                        <div class="param-input-wrapper">
+                            <input type="number" class="param-input" id="inputRoic" value="12" step="1" oninput="onParamInput('roic')">
+                            <span class="param-unit">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Omzetgroei -->
+                    <div class="param-box">
+                        <div class="param-header">
+                            <span class="param-label">Min. Omzetgroei</span>
+                            <button class="any-btn active" id="anyBtnRev" onclick="toggleAny('rev')">Any</button>
+                        </div>
+                        <div class="param-input-wrapper">
+                            <input type="number" class="param-input is-any" id="inputRev" value="" placeholder="Any" step="1" oninput="onParamInput('rev')">
+                            <span class="param-unit">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Winstgroei -->
+                    <div class="param-box">
+                        <div class="param-header">
+                            <span class="param-label">Min. Winstgroei</span>
+                            <button class="any-btn active" id="anyBtnEps" onclick="toggleAny('eps')">Any</button>
+                        </div>
+                        <div class="param-input-wrapper">
+                            <input type="number" class="param-input is-any" id="inputEps" value="" placeholder="Any" step="1" oninput="onParamInput('eps')">
+                            <span class="param-unit">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Nettowinstmarge -->
+                    <div class="param-box">
+                        <div class="param-header">
+                            <span class="param-label">Min. Nettomarge</span>
+                            <button class="any-btn" id="anyBtnMargin" onclick="toggleAny('margin')">Any</button>
+                        </div>
+                        <div class="param-input-wrapper">
+                            <input type="number" class="param-input" id="inputMargin" value="10" step="1" oninput="onParamInput('margin')">
+                            <span class="param-unit">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Koersgroei over tijdframe -->
+                    <div class="param-box">
+                        <div class="param-header">
+                            <span class="param-label" id="labelPriceGrowth">Koersgr./jr (10j)</span>
+                            <button class="any-btn" id="anyBtnPriceGrowth" onclick="toggleAny('priceGrowth')">Any</button>
+                        </div>
+                        <div class="param-input-wrapper">
+                            <input type="number" class="param-input" id="inputPriceGrowth" value="15" step="1" oninput="onParamInput('priceGrowth')">
+                            <span class="param-unit">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Trendkwaliteit TK over tijdframe -->
+                    <div class="param-box">
+                        <div class="param-header">
+                            <span class="param-label" id="labelTk" title="Trendkwaliteit (R²): % van de koersstijging dat zuiver de ideale groeicurve volgt">Min. TK / R² (10j)</span>
+                            <button class="any-btn" id="anyBtnTk" onclick="toggleAny('tk')">Any</button>
+                        </div>
+                        <div class="param-input-wrapper">
+                            <input type="number" class="param-input" id="inputTk" value="95" step="1" oninput="onParamInput('tk')">
+                            <span class="param-unit">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer: Result Counter & Action Buttons -->
+                <div class="screener-footer">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <span class="badge-results" id="badgeResultsCount">
+                            <i class="fa-solid fa-circle-check"></i> <span id="resultsCountText">Gevonden: 0 aandelen</span>
+                        </span>
+                        <span class="save-indicator" id="saveIndicator">
+                            <i class="fa-solid fa-check-double"></i> Onthouden in LocalStorage
+                        </span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button class="btn-copy-tickers" onclick="copyFilteredTickers()" title="Kopieer alle gefilterde symbolen direct als kommagescheiden lijst zonder spaties">
+                            <i class="fa-solid fa-copy"></i> Kopieer Tickers (CSV)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table Card -->
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table id="stocksTable">
+                        <thead>
+                            <tr id="tableHeaders">
+                                <th onclick="sortTable('Symbol')">Symbol <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('Name')">Company <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-industry" onclick="sortTable('Industry')">Industry <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('Price')" style="text-align: right;">Price <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('ROIC')" style="text-align: center;" title="Return on Invested Capital">ROIC <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('RevGrowth')" style="text-align: center;" title="Omzetgroei">Omzet <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('EPSGrowth')" style="text-align: center;" title="Winstgroei (EPS)">Winst <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('NetProfitMargin')" style="text-align: center;" title="Nettowinstmarge">Marge <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('PriceGrowth')" style="text-align: center;" id="thColPriceGrowth">Koersgr. <i class="fa-solid fa-sort"></i></th>
+                                <th onclick="sortTable('TK')" style="text-align: center;" id="thColTk">TK <i class="fa-solid fa-sort"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Rows will be injected here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Stock Details Slide Drawer -->
+        <div class="drawer-panel" id="detailDrawer">
+            <div class="drawer-resizer" id="drawerResizer"></div>
+            <div class="drawer-header">
+                <div>
+                    <h2 class="drawer-title-symbol" id="drawerSymbol">AMD</h2>
+                    <p class="drawer-title-name" id="drawerName">Advanced Micro Devices, Inc.</p>
+                </div>
+                <div class="drawer-header-actions">
+                    <button class="header-icon-btn" onclick="setDrawerWidth('default')" title="Standaard breedte (580px)">
+                        <i class="fa-solid fa-compress"></i>
+                    </button>
+                    <button class="header-icon-btn" onclick="setDrawerWidth('50%')" title="50/50 Split Screen (Naast elkaar)">
+                        <i class="fa-solid fa-table-columns"></i>
+                    </button>
+                    <button class="header-icon-btn" onclick="setDrawerWidth('fullscreen')" title="Brede weergave (Groot)">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                    <button class="header-icon-btn" onclick="openEasygrowthWindow()" title="Openen in gekoppeld extern venster (2e scherm)">
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--color-primary);"></i>
+                    </button>
+                    <div class="close-btn" onclick="closeDrawer()" title="Sluiten">
+                        <i class="fa-solid fa-xmark"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drawer Tabs -->
+            <div class="drawer-tabs">
+                <button class="drawer-tab-btn active" id="tabBtnEasyGrowth" onclick="switchDrawerTab('easygrowth')">
+                    <i class="fa-solid fa-chart-line me-1"></i> EasyGrowth Grafiek
+                </button>
+                <button class="drawer-tab-btn" id="tabBtnToppers" onclick="switchDrawerTab('toppers')">
+                    <i class="fa-solid fa-sliders me-1"></i> Profiel & Factoren
+                </button>
+            </div>
+            
+            <div style="display: flex; flex: 1; min-height: 0; width: 100%; overflow: hidden;">
+                <div class="drawer-body" id="drawerBodyToppers" style="display: none;">
+                    
+                    <!-- 1. Dynamische Profiel Uitleg & Filosofie Kaart -->
+                    <div id="profileExplanationContainer"></div>
+
+                    <!-- 2. Factoren van het Geselecteerde Aandeel Kaart -->
+                    <div id="stockFactorsContainer"></div>
+
+                    <!-- 3. Progress ring gauges (4 Kernindicatoren) -->
+                    <div class="indicators-grid">
+                        
+                        <!-- ROIC Gauge -->
+                        <div class="gauge-container" title="Kapitaalrendement (Return on Invested Capital over 5 jaar)">
+                            <span class="gauge-label" style="color: #16a34a;">ROIC (5j)</span>
+                            <div class="ring-wrapper">
+                                <svg class="ring-svg">
+                                    <circle class="ring-bg" cx="35" cy="35" r="31"></circle>
+                                    <circle class="ring-fill" id="gaugeRoicFill" cx="35" cy="35" r="31" stroke="#16a34a"></circle>
+                                </svg>
+                                <span class="ring-val" id="gaugeRoicVal" style="color: #16a34a;">0.0%</span>
+                            </div>
+                        </div>
+                    
+                        <!-- Nettomarge Gauge -->
+                        <div class="gauge-container" title="Nettowinstmarge (Pricing Power & Rendabiliteit)">
+                            <span class="gauge-label" style="color: #007bff;">Nettomarge</span>
+                            <div class="ring-wrapper">
+                                <svg class="ring-svg">
+                                    <circle class="ring-bg" cx="35" cy="35" r="31"></circle>
+                                    <circle class="ring-fill" id="gaugeMarginFill" cx="35" cy="35" r="31" stroke="#007bff"></circle>
+                                </svg>
+                                <span class="ring-val" id="gaugeMarginVal" style="color: #007bff;">0.0%</span>
+                            </div>
+                        </div>
+                    
+                        <!-- Winstgroei Gauge -->
+                        <div class="gauge-container" title="Winstgroei per aandeel (EPS / WPA)">
+                            <span class="gauge-label" style="color: #ea580c;">Winstgroei</span>
+                            <div class="ring-wrapper">
+                                <svg class="ring-svg">
+                                    <circle class="ring-bg" cx="35" cy="35" r="31"></circle>
+                                    <circle class="ring-fill" id="gaugeEpsFill" cx="35" cy="35" r="31" stroke="#ea580c"></circle>
+                                </svg>
+                                <span class="ring-val" id="gaugeEpsVal" style="color: #ea580c;">0.0%</span>
+                            </div>
+                        </div>
+
+                        <!-- TK (R²) Gauge -->
+                        <div class="gauge-container" title="Trendkwaliteit (R² over actieve tijdframe, meet de consistentie en afwezigheid van zaagtanden)">
+                            <span class="gauge-label" id="labelGaugeTk" style="color: #9333ea;">TK (R²)</span>
+                            <div class="ring-wrapper">
+                                <svg class="ring-svg">
+                                    <circle class="ring-bg" cx="35" cy="35" r="31"></circle>
+                                    <circle class="ring-fill" id="gaugeTkFill" cx="35" cy="35" r="31" stroke="#9333ea"></circle>
+                                </svg>
+                                <span class="ring-val" id="gaugeTkVal" style="color: #9333ea;">0.0</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+            </div>
+
+            <!-- Integrated Live EasyGrowth View -->
+            <div class="drawer-easygrowth-panel" id="easygrowthTabContent" style="display: flex;">
+                <div class="easygrowth-toolbar">
+                    <div class="easygrowth-url-box">
+                        <i class="fa-solid fa-chart-line" style="color: var(--color-primary);"></i>
+                        <span id="easygrowthUrlLabel" class="eg-url-display">https://www.easygrowth.org</span>
+                    </div>
+                    <div class="easygrowth-actions">
+                        <button class="btn-eg-tool" onclick="reloadEasygrowthFrame()" title="Herladen">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                        <a id="easygrowthPopoutBtn" href="https://www.easygrowth.org" target="EasyGrowthWindow" class="btn-eg-tool" title="Openen in gekoppeld extern venster (2e beeldscherm)">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Apart venster
+                        </a>
+                    </div>
+                </div>
+                <div class="easygrowth-iframe-wrapper">
+                    <iframe id="easygrowthIframe" src="" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    </div>
+
+    <!-- Save Profile Modal -->
+    <div class="modal-overlay" id="saveProfileModalOverlay" onclick="if(event.target===this) closeSaveProfileModal()">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-bookmark" style="color: #00ff66;"></i> Huidige Filters Opslaan als Profiel
+                </div>
+                <div class="close-btn" onclick="closeSaveProfileModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Naam van het profiel</label>
+                    <input type="text" id="newProfileNameInput" class="search-input" placeholder="Bijv. 🌟 Mijn Favoriete Groeiers" style="width: 100%; margin-top: 6px; padding: 10px 14px; font-size: 14px;">
+                </div>
+                <div>
+                    <label style="font-size: 12px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Korte toelichting (optioneel)</label>
+                    <input type="text" id="newProfileDescInput" class="search-input" placeholder="Bijv. 10 jaar historie, hoge TK en ROIC > 15%" style="width: 100%; margin-top: 6px; padding: 10px 14px; font-size: 13px;">
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border-glass); border-radius: 12px; padding: 14px;">
+                    <div style="font-size: 11.5px; font-weight: 700; color: var(--color-primary); text-transform: uppercase; margin-bottom: 8px;">
+                        <i class="fa-solid fa-circle-info me-1"></i> Instellingen die worden opgeslagen:
+                    </div>
+                    <div id="saveProfileSummary" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.6;">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-eg-tool" onclick="closeSaveProfileModal()">Annuleren</button>
+                <button class="btn-eg-tool" onclick="confirmSaveProfile()" style="background: var(--color-primary); border-color: var(--color-primary); color: #fff;">
+                    <i class="fa-solid fa-check"></i> Profiel Toevoegen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Profiles Modal -->
+    <div class="modal-overlay" id="manageProfilesModalOverlay" onclick="if(event.target===this) closeManageProfilesModal()">
+        <div class="modal-card" style="max-width: 680px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-sliders" style="color: var(--color-primary);"></i> Beheer Profielenlijst
+                </div>
+                <div class="close-btn" onclick="closeManageProfilesModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    Hieronder zie je alle actieve profielen. Je kunt bestaande profielen overschrijven met jouw huidige filters, verwijderen of terugkeren naar de fabrieksinstellingen.
+                </div>
+                <div id="manageProfilesList" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 4px;">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button class="btn-eg-tool" onclick="resetDefaultProfiles()" style="color: #ff5555; border-color: rgba(255, 85, 85, 0.3);">
+                    <i class="fa-solid fa-rotate-left"></i> Fabrieksinstellingen herstellen
+                </button>
+                <button class="btn-eg-tool" onclick="closeManageProfilesModal()" style="background: var(--color-primary); border-color: var(--color-primary); color: #fff;">
+                    Sluiten
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EasyGrowth Universe Dataset -->
+    <script src="eg_live_universe.js"></script>
+
+    <!-- UI Logic and Interactivity -->
+    <script>
+        const BASE_API_URL = "https://www.easygrowth.org/api";
+        let currentSort = { col: 'ROIC', desc: true };
+        let selectedSymbol = null;
+        let activeDrawerTab = 'easygrowth';
+        let syncWindow = null;
+        let syncEnabled = false;
+
+        // In-memory quote cache (preserves pre-seeded quotes from eg_live_universe.js)
+        window.quoteCache = window.quoteCache || {};
+
+        // Screener State with LocalStorage Persistence
+        const DEFAULT_SCREENER_STATE = {
+            timeframe: '10y',
+            activePreset: 'rustige_groeiers',
+            excludeCyclical: true,
+            requireFullHistory: true,
+            params: {
+                roic: { isAny: false, val: 12 },
+                rev: { isAny: true, val: 10 },
+                eps: { isAny: true, val: 10 },
+                margin: { isAny: false, val: 10 },
+                priceGrowth: { isAny: false, val: 15 },
+                tk: { isAny: false, val: 95 }
+            }
+        };
+
+        let screenerState = loadScreenerState();
+
+        // Load & Save to LocalStorage
+        function loadScreenerState() {
+            try {
+                const saved = localStorage.getItem('eg_toppers_screener_v6');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    return Object.assign({}, DEFAULT_SCREENER_STATE, parsed);
+                }
+            } catch(e) {
+                console.error("Fout bij laden van LocalStorage:", e);
+            }
+            return JSON.parse(JSON.stringify(DEFAULT_SCREENER_STATE));
+        }
+
+        function saveScreenerState() {
+            try {
+                localStorage.setItem('eg_toppers_screener_v6', JSON.stringify(screenerState));
+                showSaveIndicator();
+            } catch(e) {}
+        }
+
+        function showSaveIndicator() {
+            const ind = document.getElementById("saveIndicator");
+            if (!ind) return;
+            ind.classList.add("saved");
+            ind.innerHTML = `<i class="fa-solid fa-check-double"></i> Opgeslagen in LocalStorage ✓`;
+            setTimeout(() => {
+                ind.classList.remove("saved");
+            }, 2000);
+        }
+
+        // Mathematical Log-Linear Regression (TK & Annualized Return with Strict History Check)
+        function calcLogRegTk(prices, targetDays) {
+            if (!prices || prices.length < 20) {
+                return { tk: 50.0, slope: 0, r2: 0, retAnn: 0, hasEnoughHistory: false, historyYears: 0 };
+            }
+            const totalDays = prices.length;
+            const minRequiredDays = Math.round(targetDays * 0.85); // e.g. 10y needs >= 2142d (~8.5-10 yrs)
+            const hasEnoughHistory = totalDays >= minRequiredDays;
+            const historyYears = Math.round((totalDays / 252.0) * 10) / 10;
+
+            if (!hasEnoughHistory) {
+                return { tk: 50.0, slope: 0, r2: 0, retAnn: 0, hasEnoughHistory: false, historyYears };
+            }
+
+            const slice = prices.slice(-targetDays);
+            const n = slice.length;
+            if (n < 20) {
+                return { tk: 50.0, slope: 0, r2: 0, retAnn: 0, hasEnoughHistory: false, historyYears };
+            }
+
+            const logP = [];
+            const t = [];
+            for (let i = 0; i < n; i++) {
+                if (slice[i] <= 0) return { tk: 50.0, slope: 0, r2: 0, retAnn: 0, hasEnoughHistory: false, historyYears };
+                logP.push(Math.log(slice[i]));
+                t.push(i / (n - 1));
+            }
+
+            let sumT = 0, sumY = 0, sumTY = 0, sumTT = 0;
+            for (let i = 0; i < n; i++) {
+                sumT += t[i];
+                sumY += logP[i];
+                sumTY += t[i] * logP[i];
+                sumTT += t[i] * t[i];
+            }
+            const meanY = sumY / n;
+            const slope = (n * sumTY - sumT * sumY) / (n * sumTT - sumT * sumT);
+            const intercept = (sumY - slope * sumT) / n;
+
+            let ssTot = 0, ssRes = 0;
+            for (let i = 0; i < n; i++) {
+                const yPred = intercept + slope * t[i];
+                ssTot += Math.pow(logP[i] - meanY, 2);
+                ssRes += Math.pow(logP[i] - yPred, 2);
+            }
+            const r2 = ssTot > 0 ? Math.max(0, 1 - (ssRes / ssTot)) : 0;
+
+            const years = targetDays / 252.0;
+            const annSlope = slope / years;
+            const retTot = (slice[n - 1] - slice[0]) / slice[0];
+            const retAnn = (Math.pow(1 + Math.max(-0.99, retTot), 1 / years) - 1) * 100;
+
+            // Zuivere Trendkwaliteit (R²): Meet exact welk percentage (0 - 100%) van de koersbeweging
+            // verklaard wordt door de opwaartse log-lineaire trendlijn (zonder ruis).
+            // - Bij een opwaartse trend (annSlope > 0): TK = R² * 100 (bv. R² van 0,9604 -> TK = 96,0%)
+            // - Bij een neerwaartse of vlakke trend (annSlope <= 0): TK = 0 (geen opwaartse trend)
+            let tk = 0.0;
+            if (annSlope > 0) {
+                tk = Math.max(0, Math.min(100, Math.round(r2 * 1000) / 10.0));
+            } else {
+                tk = 0.0;
+            }
+            return { tk, slope: annSlope, r2, retAnn: Math.round(retAnn * 10) / 10, hasEnoughHistory: true, historyYears };
+        }
+
+        // Active Stock Universe
+        function getStocksUniverse() {
+            if (window.egLiveUniverse && window.egLiveUniverse.length > 0) {
+                return window.egLiveUniverse;
+            }
+            return [];
+        }
+
+        // Timeframe Management (1j, 3j, 5j, 10j)
+        function setTimeframe(tf) {
+            screenerState.timeframe = tf;
+            screenerState.activePreset = 'custom';
+            updateScreenerUI();
+            saveScreenerState();
+            filterAndRender();
+            if (currentSelectedStock) {
+                renderProfileAndFactors(currentSelectedStock);
+            }
+        }
+
+        function getTimeframeDays() {
+            switch(screenerState.timeframe) {
+                case '1y': return 252;
+                case '3y': return 756;
+                case '5y': return 1260;
+                case '10y': return 2520;
+                default: return 1260;
+            }
+        }
+
+        function getTimeframeLabel() {
+            switch(screenerState.timeframe) {
+                case '1y': return '1j';
+                case '3y': return '3j';
+                case '5y': return '5j';
+                case '10y': return '10j';
+                default: return '5j';
+            }
+        }
+
+        // Default Profiles Definition
+        const DEFAULT_PROFILES = [
+            {
+                id: 'rustige_groeiers',
+                name: '🐢 Rustige Groeiers (10j)',
+                description: '10 jaar gestage stijging: Koersgroei >= 15%/jr, extreme trendkwaliteit (R² >= 95%), sterke balans, lage drawdown',
+                timeframe: '10y',
+                excludeCyclical: true,
+                requireFullHistory: true,
+                params: {
+                    roic: { isAny: false, val: 12 },
+                    rev: { isAny: true, val: 10 },
+                    eps: { isAny: true, val: 10 },
+                    margin: { isAny: false, val: 10 },
+                    priceGrowth: { isAny: false, val: 15 },
+                    tk: { isAny: false, val: 95 }
+                }
+            },
+            {
+                id: 'rustige_groeiers_5y',
+                name: '🐢 Rustige Groeiers (5j)',
+                description: '5 jaar gestage stijging: Koersgroei >= 15%/jr, extreme trendkwaliteit (R² >= 95%), zonder cyclische uitschieters',
+                timeframe: '5y',
+                excludeCyclical: true,
+                requireFullHistory: true,
+                params: {
+                    roic: { isAny: false, val: 12 },
+                    rev: { isAny: true, val: 10 },
+                    eps: { isAny: true, val: 10 },
+                    margin: { isAny: false, val: 10 },
+                    priceGrowth: { isAny: false, val: 15 },
+                    tk: { isAny: false, val: 95 }
+                }
+            },
+            {
+                id: 'compounders_10y',
+                name: '🏛️ Compounders (10j)',
+                description: '10-Jaars Compounders (Koersgroei >= 15%, TK/R² >= 85%, inclusief topholdings zoals Investor AB)',
+                timeframe: '10y',
+                excludeCyclical: false,
+                requireFullHistory: true,
+                params: {
+                    roic: { isAny: false, val: 10 },
+                    rev: { isAny: true, val: 10 },
+                    eps: { isAny: true, val: 10 },
+                    margin: { isAny: false, val: 10 },
+                    priceGrowth: { isAny: false, val: 15 },
+                    tk: { isAny: false, val: 85 }
+                }
+            },
+            {
+                id: 'echte_groeiers_5y',
+                name: '💎 Echte Kwaliteitsgroeiers (5j)',
+                description: 'Fundamentele parels: ROIC >= 18%, Marge >= 15%, Winst >= 15%, Omzet >= 12%, Koers >= 12%/jr, TK >= 65%',
+                timeframe: '5y',
+                excludeCyclical: true,
+                requireFullHistory: true,
+                params: {
+                    roic: { isAny: false, val: 18 },
+                    rev: { isAny: false, val: 12 },
+                    eps: { isAny: false, val: 15 },
+                    margin: { isAny: false, val: 15 },
+                    priceGrowth: { isAny: false, val: 12 },
+                    tk: { isAny: false, val: 65 }
+                }
+            },
+            {
+                id: 'top_van_het_moment',
+                name: '🚀 De Top van het Moment (1j)',
+                description: 'Actuele koplopers (1j): Koersgroei >= 25%, strakke trend (TK/R² >= 65%), Winstgroei >= 20%, Omzetgroei >= 15%',
+                timeframe: '1y',
+                excludeCyclical: false,
+                requireFullHistory: false,
+                params: {
+                    roic: { isAny: false, val: 15 },
+                    rev: { isAny: false, val: 15 },
+                    eps: { isAny: false, val: 20 },
+                    margin: { isAny: false, val: 10 },
+                    priceGrowth: { isAny: false, val: 25 },
+                    tk: { isAny: false, val: 65 }
+                }
+            },
+            {
+                id: 'dubbele_turbo',
+                name: '⚡ Dubbele Turbo',
+                description: 'Dubbele acceleratie: Winstgroei >= 20%, Omzetgroei >= 20%, ROIC >= 15%, Koersgroei >= 15%/jr',
+                timeframe: '1y',
+                excludeCyclical: false,
+                requireFullHistory: false,
+                params: {
+                    roic: { isAny: false, val: 15 },
+                    rev: { isAny: false, val: 20 },
+                    eps: { isAny: false, val: 20 },
+                    margin: { isAny: false, val: 10 },
+                    priceGrowth: { isAny: false, val: 15 },
+                    tk: { isAny: false, val: 50 }
+                }
+            },
+            {
+                id: 'all',
+                name: '🌐 Alle Aandelen',
+                description: 'Geen filters, toon het volledige aandelenaanbod van 2.089 bedrijven',
+                timeframe: '5y',
+                excludeCyclical: false,
+                requireFullHistory: false,
+                params: {
+                    roic: { isAny: true, val: 0 },
+                    rev: { isAny: true, val: 0 },
+                    eps: { isAny: true, val: 0 },
+                    margin: { isAny: true, val: 0 },
+                    priceGrowth: { isAny: true, val: 0 },
+                    tk: { isAny: true, val: 0 }
+                }
+            }
+        ];
+
+        function getProfilesList() {
+            try {
+                const saved = localStorage.getItem('eg_toppers_custom_profiles_v3');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+                const oldSaved = localStorage.getItem('eg_toppers_custom_profiles_v2');
+                if (oldSaved) {
+                    const oldList = JSON.parse(oldSaved);
+                    const userCustom = oldList.filter(p => p.id && p.id.startsWith('custom_'));
+                    if (userCustom.length > 0) {
+                        const merged = [...DEFAULT_PROFILES, ...userCustom];
+                        localStorage.setItem('eg_toppers_custom_profiles_v3', JSON.stringify(merged));
+                        return merged;
+                    }
+                }
+            } catch(e) {}
+            return JSON.parse(JSON.stringify(DEFAULT_PROFILES));
+        }
+
+        function saveProfilesList(list) {
+            try {
+                localStorage.setItem('eg_toppers_custom_profiles_v3', JSON.stringify(list));
+            } catch(e) {}
+        }
+
+        function populateProfileDropdown() {
+            const sel = document.getElementById("profileSelect");
+            if (!sel) return;
+            const profiles = getProfilesList();
+            const currentPreset = screenerState.activePreset;
+
+            let html = '';
+            let matched = false;
+            profiles.forEach(p => {
+                const isSelected = p.id === currentPreset;
+                if (isSelected) matched = true;
+                html += `<option value="${p.id}" ${isSelected ? 'selected' : ''}>${p.name}</option>`;
+            });
+
+            if (!matched && currentPreset === 'custom') {
+                html += `<option value="custom" selected>✏️ Aangepast (Eigen filters)</option>`;
+            }
+
+            sel.innerHTML = html;
+        }
+
+        function onProfileSelectChange(val) {
+            if (val === 'custom') return;
+            applyPreset(val);
+        }
+
+        function applyPreset(presetKey) {
+            const profiles = getProfilesList();
+            const p = profiles.find(item => item.id === presetKey);
+            if (!p) return;
+
+            screenerState.activePreset = p.id;
+            screenerState.timeframe = p.timeframe || '5y';
+            screenerState.excludeCyclical = !!p.excludeCyclical;
+            screenerState.requireFullHistory = p.requireFullHistory !== false;
+            screenerState.params = JSON.parse(JSON.stringify(p.params));
+
+            updateScreenerUI();
+            saveScreenerState();
+            filterAndRender();
+            if (currentSelectedStock) {
+                renderProfileAndFactors(currentSelectedStock);
+            }
+        }
+
+        function formatProfileSummary(p) {
+            const tf = p.timeframe === '10y' ? '10J' : (p.timeframe === '5y' ? '5J' : (p.timeframe === '3y' ? '3J' : '1J'));
+            const roic = p.params.roic.isAny ? 'Any' : `>= ${p.params.roic.val}%`;
+            const koers = p.params.priceGrowth.isAny ? 'Any' : `>= ${p.params.priceGrowth.val}%`;
+            const tk = p.params.tk.isAny ? 'Any' : `>= ${p.params.tk.val}%`;
+            const winst = p.params.eps.isAny ? 'Any' : `>= ${p.params.eps.val}%`;
+            const marge = p.params.margin.isAny ? 'Any' : `>= ${p.params.margin.val}%`;
+            const cycl = p.excludeCyclical ? 'Cyclisch uitgesloten' : 'Cyclisch toegestaan';
+            return `Tijdframe: <strong style="color: #0f172a;">${tf}</strong> | Koersgr.: <strong style="color: #0f172a;">${koers}</strong> | TK: <strong style="color: #0f172a;">${tk}</strong> | ROIC: <strong style="color: #0f172a;">${roic}</strong> | Winst: <strong style="color: #0f172a;">${winst}</strong> | Marge: <strong style="color: #0f172a;">${marge}</strong> | <span style="color: ${p.excludeCyclical ? '#dc2626' : '#16a34a'}; font-weight: 700;">${cycl}</span>`;
+        }
+
+        let currentSelectedStock = null;
+
+        function getProfilePhilosophy(profileId) {
+            const id = profileId || screenerState.activePreset;
+            switch(id) {
+                case 'rustige_groeiers':
+                case 'rustige_groeiers_10y':
+                    return {
+                        title: '🐢 Rustige Groeiers (10j)',
+                        subtitle: 'R² ≥ 95 & Koersgroei ≥ 15%/jr over 10 jaar',
+                        explanation: 'Dit profiel selecteert de absolute crème de la crème van de beurs over een heel decennium: bedrijven die minstens +15% per jaar stegen met een extreme trendkwaliteit (R² ≥ 95%). Koersfluctuaties en zaagtanden zijn nagenoeg afwezig. Door cyclische sectoren uit te sluiten, behaalt u maximale rust en een superieur samengesteld rendement ("slaapcomfort").'
+                    };
+                case 'rustige_groeiers_5y':
+                case 'continue_groeiers_5y':
+                    return {
+                        title: '🐢 Rustige Groeiers (5j)',
+                        subtitle: 'R² ≥ 95 & Koersgroei ≥ 15%/jr over 5 jaar',
+                        explanation: 'Voor beleggers met een middellange horizon (5 jaar). Selecteert bedrijven die de afgelopen 5 jaar onverstoorbaar zijn doorgegroeid met minstens +15%/jaar en een uitzonderlijke trendvastheid (R² ≥ 95%), zonder last te hebben van cyclische pieken en dalen.'
+                    };
+                case 'top_van_het_moment':
+                    return {
+                        title: '🚀 De Top van het Moment (1j)',
+                        subtitle: 'Actuele koplopers & winstversnelling (1j)',
+                        explanation: 'Dit profiel filtert op de sterkste momentumleiders van het afgelopen jaar. Het combineert een krachtige stijgende trend (TK ≥ 65%) en koerswinst ≥ +25% met dubbelcijferige winstversnelling (EPS ≥ 20%) en gezonde marges. Ideaal om in te spelen op de winnaars van vandaag.'
+                    };
+                case 'compounders_10y':
+                    return {
+                        title: '🏛️ Compounders (10j)',
+                        subtitle: 'Meesters in kapitaalallocatie & 10j compounding',
+                        explanation: 'Dit profiel richt zich op bedrijven en investeringsmaatschappijen (zoals Investor AB en kwaliteitsconglomeraten) die over 10 jaar minstens +15%/jaar rendement behalen met hoge trendvastheid (R² ≥ 85%). Ze herinvesteren hun winsten structureel tegen een hoog kapitaalrendement.'
+                    };
+                case 'echte_groeiers':
+                case 'echte_groeiers_5y':
+                    return {
+                        title: '💎 Echte Kwaliteitsgroeiers (5j)',
+                        subtitle: 'Hoge ROIC (≥ 18%), sterke marges & dubbele groei',
+                        explanation: 'Dit profiel zoekt fundamentele topbedrijven met een sterke economische slotgracht (moat). Met een ROIC ≥ 18%, winstmarge ≥ 15% en dubbelcijferige omzet- en winstgroei over 5 jaar, zijn dit de bedrijven met ongekende winstkracht en prijszettingsvermogen.'
+                    };
+                case 'dubbele_turbo':
+                    return {
+                        title: '⚡ Dubbele Turbo',
+                        subtitle: 'Omzet- én winstgroei > 20% met hoge rentabiliteit',
+                        explanation: 'Dit profiel selecteert dynamische ondernemingen die tegelijkertijd zowel hun omzet als hun nettowinst met meer dan +20% zien groeien, ondersteund door een hoge rentabiliteit (ROIC ≥ 15%). Ideaal voor wie op zoek is naar fundamentele acceleratie.'
+                    };
+                case 'all':
+                    return {
+                        title: '🌐 Alle Aandelen',
+                        subtitle: 'Het volledige universum zonder actieve filters',
+                        explanation: 'Toont het complete aandelenaanbod van 2.089 bedrijven. Hier kunt u zelf vrij sorteren en filteren op elke gewenste indicator.'
+                    };
+                default:
+                    const profiles = getProfilesList();
+                    const p = profiles.find(x => x.id === id);
+                    if (p) {
+                        return {
+                            title: p.name,
+                            subtitle: p.description || 'Opgeslagen profiel',
+                            explanation: `Dit profiel filtert aandelen op basis van uw opgeslagen criteria over ${p.timeframe || '5y'}.`
+                        };
+                    }
+                    return {
+                        title: '✏️ Aangepast Profiel',
+                        subtitle: 'Uw persoonlijke filtercombinatie',
+                        explanation: 'Dit profiel filtert op basis van uw eigen handmatig ingestelde parameters voor kapitaalrendement (ROIC), omzetgroei, winstgroei, nettomarge, koersrendement en trendkwaliteit.'
+                    };
+            }
+        }
+
+        function renderProfileAndFactors(item) {
+            if (!item) return;
+            currentSelectedStock = item;
+
+            const profExpCont = document.getElementById("profileExplanationContainer");
+            const factorsCont = document.getElementById("stockFactorsContainer");
+            if (!profExpCont || !factorsCont) return;
+
+            const profInfo = getProfilePhilosophy(screenerState.activePreset);
+            const tfLbl = getTimeframeLabel();
+            const p = screenerState.params;
+
+            // Generate Criteria Tags for Profile
+            const tags = [];
+            tags.push(`<span class="badge-sector" style="background:#f1f5f9; color:#0f172a;"><i class="fa-solid fa-clock me-1"></i> Tijdframe: ${tfLbl}</span>`);
+            if (!p.tk.isAny) tags.push(`<span class="badge-sector" style="background:#f1f5f9; color:#0f172a;"><i class="fa-solid fa-chart-line me-1"></i> Min. TK: ${p.tk.val}</span>`);
+            if (!p.priceGrowth.isAny) tags.push(`<span class="badge-sector" style="background:#f1f5f9; color:#0f172a;"><i class="fa-solid fa-arrow-trend-up me-1"></i> Min. Koers: +${p.priceGrowth.val}%/jr</span>`);
+            if (!p.roic.isAny) tags.push(`<span class="badge-sector" style="background:#f1f5f9; color:#0f172a;"><i class="fa-solid fa-gem me-1"></i> Min. ROIC: ${p.roic.val}%</span>`);
+            if (!p.eps.isAny) tags.push(`<span class="badge-sector" style="background:#f1f5f9; color:#0f172a;">Min. Winst: +${p.eps.val}%</span>`);
+            if (!p.rev.isAny) tags.push(`<span class="badge-sector" style="background:#f1f5f9; color:#0f172a;">Min. Omzet: +${p.rev.val}%</span>`);
+            if (!p.margin.isAny) tags.push(`<span class="badge-sector" style="background:#f1f5f9; color:#0f172a;">Min. Marge: ${p.margin.val}%</span>`);
+            if (screenerState.excludeCyclical) tags.push(`<span class="badge-sector" style="background:#fef2f2; color:#dc2626; border-color:#fecaca;"><i class="fa-solid fa-shield me-1"></i> Cyclisch Uitgesloten</span>`);
+            if (screenerState.requireFullHistory) tags.push(`<span class="badge-sector" style="background:#f0fdf4; color:#16a34a; border-color:#bbf7d0;"><i class="fa-solid fa-check me-1"></i> Volledige Historie</span>`);
+
+            // Profile Card HTML
+            profExpCont.innerHTML = `
+                <div class="stats-block" style="background: #ffffff; border: 1px solid var(--border-glass); border-left: 4px solid var(--color-primary); padding: 18px 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 15px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif;">
+                            <i class="fa-solid fa-sliders" style="color: var(--color-primary); margin-right: 6px;"></i> ${profInfo.title}
+                        </span>
+                        <span class="badge-sector" style="background: #eff6ff; color: var(--color-primary); border: 1px solid #bfdbfe; font-size: 11.5px; font-weight: 700;">
+                            ${profInfo.subtitle}
+                        </span>
+                    </div>
+                    
+                    <div style="font-size: 12.5px; line-height: 1.6; color: #475569; margin-bottom: 12px;">
+                        <strong>Waarom selecteert dit profiel deze aandelen?</strong><br>
+                        ${profInfo.explanation}
+                    </div>
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; padding-top: 10px; border-top: 1px solid #f1f5f9;">
+                        <span style="font-size: 11px; font-weight: 700; color: #64748b; margin-right: 4px; align-self: center;">CRITERIA:</span>
+                        ${tags.join('')}
+                    </div>
+                </div>
+            `;
+
+            // Calculate Factor Matching Checks
+            const tkPass = p.tk.isAny || item.computedTK >= p.tk.val;
+            const pricePass = p.priceGrowth.isAny || item.computedPriceGrowth >= p.priceGrowth.val;
+            const roicPass = p.roic.isAny || item.ROIC >= p.roic.val;
+            const marginPass = p.margin.isAny || item.NetProfitMargin >= p.margin.val;
+            const epsPass = p.eps.isAny || item.EPSGrowth >= p.eps.val;
+            const revPass = p.rev.isAny || item.RevGrowth >= p.rev.val;
+
+            function formatCheckRow(label, actualVal, normVal, isPass, badgeText) {
+                const passBadge = isPass 
+                    ? `<span style="font-size: 11px; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 2px 7px; border-radius: 4px;"><i class="fa-solid fa-check me-1"></i> ${badgeText || 'Voldoet'}</span>`
+                    : `<span style="font-size: 11px; font-weight: 700; color: #d97706; background: #fffbeb; border: 1px solid #fde68a; padding: 2px 7px; border-radius: 4px;">Afwijkend</span>`;
+                return `
+                    <div class="stat-row" style="padding: 6px 0; border-bottom: 1px solid #f8fafc;">
+                        <span class="stat-label" style="font-size: 12.5px;">${label}</span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="stat-val" style="font-size: 13px;">${actualVal}</span>
+                            <span style="font-size: 11px; color: var(--text-secondary);">(norm: ${normVal})</span>
+                            ${passBadge}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Summary text why this specific stock matches
+            let stockMatchNote = '';
+            if (item.computedTK >= 95) {
+                stockMatchNote = `Met een torenhoge Trendkwaliteit van <strong>${item.computedTK.toFixed(1)} (R²)</strong> en een koersgroei van <strong>+${item.computedPriceGrowth.toFixed(1)}%/jaar</strong> vertoont ${item.Symbol} over ${tfLbl} een uiterst zeldzaam, kaarsrecht opwaarts koersverloop. Dit biedt beleggers het allerhoogste slaapcomfort en minimale volatiliteit.`;
+            } else if (item.computedTK >= 85) {
+                stockMatchNote = `Met een sterke Trendkwaliteit van <strong>${item.computedTK.toFixed(1)}</strong> vertoont ${item.Symbol} over ${tfLbl} een zeer betrouwbaar stijgend koersverloop (+${item.computedPriceGrowth.toFixed(1)}%/jr) en een solide kapitaalrendement (ROIC ${item.ROIC.toFixed(1)}%).`;
+            } else if (item.computedPriceGrowth >= 20) {
+                stockMatchNote = `${item.Symbol} onderscheidt zich door een krachtige koersgroei van <strong>+${item.computedPriceGrowth.toFixed(1)}%/jaar</strong> en een solide kapitaalrendement (ROIC ${item.ROIC.toFixed(1)}%).`;
+            } else {
+                stockMatchNote = `${item.Symbol} combineert een kapitaalrendement van <strong>${item.ROIC.toFixed(1)}%</strong> met een nettowinstmarge van <strong>${item.NetProfitMargin.toFixed(1)}%</strong> en behaalt stabiele resultaten binnen ${profInfo.title}.`;
+            }
+
+            factorsCont.innerHTML = `
+                <div class="stats-block" style="background: #ffffff; border: 1px solid var(--border-glass); padding: 18px 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px;">
+                        <div>
+                            <h3 class="stats-title" style="margin: 0; color: #0f172a; font-size: 14px; border: none; padding: 0;">
+                                <i class="fa-solid fa-chart-pie me-2" style="color: #16a34a;"></i> Factoren van ${item.Symbol}
+                            </h3>
+                            <span style="font-size: 12px; color: var(--text-secondary);">${item.Name} — ${item.Industry}</span>
+                        </div>
+                        <span style="font-size: 12px; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 6px;">
+                            <i class="fa-solid fa-circle-check me-1"></i> Profiel Match
+                        </span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column;">
+                        ${formatCheckRow('Trendkwaliteit (TK / R²)', item.computedTK.toFixed(1), p.tk.isAny ? 'Any' : '≥ ' + p.tk.val, tkPass, 'Rustig & consistent')}
+                        ${formatCheckRow('Koersgroei per jaar', (item.computedPriceGrowth > 0 ? '+' : '') + item.computedPriceGrowth.toFixed(1) + '%/jr', p.priceGrowth.isAny ? 'Any' : '≥ ' + p.priceGrowth.val + '%', pricePass, 'Sterk rendement')}
+                        ${formatCheckRow('Kapitaalrendement (ROIC)', item.ROIC.toFixed(1) + '%', p.roic.isAny ? 'Any' : '≥ ' + p.roic.val + '%', roicPass, 'Hoge rentabiliteit')}
+                        ${formatCheckRow('Nettowinstmarge', item.NetProfitMargin.toFixed(1) + '%', p.margin.isAny ? 'Any' : '≥ ' + p.margin.val + '%', marginPass, 'Pricing power')}
+                        ${formatCheckRow('Winstgroei (EPS)', (item.EPSGrowth > 0 ? '+' : '') + item.EPSGrowth.toFixed(1) + '%', p.eps.isAny ? 'Any' : '≥ ' + p.eps.val + '%', epsPass, 'Winstversnelling')}
+                        ${formatCheckRow('Omzetgroei', (item.RevGrowth > 0 ? '+' : '') + item.RevGrowth.toFixed(1) + '%', p.rev.isAny ? 'Any' : '≥ ' + p.rev.val + '%', revPass, 'Omzetstijging')}
+                    </div>
+
+                    <div style="margin-top: 14px; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; line-height: 1.6; color: #334155;">
+                        <strong style="color: #0f172a;"><i class="fa-solid fa-lightbulb me-1" style="color: #d97706;"></i> Waarom past ${item.Symbol} in dit profiel?</strong><br>
+                        ${stockMatchNote}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Modal: Save Profile
+        function openSaveProfileModal() {
+            const summaryDiv = document.getElementById("saveProfileSummary");
+            if (summaryDiv) {
+                summaryDiv.innerHTML = formatProfileSummary(screenerState);
+            }
+            const nameInput = document.getElementById("newProfileNameInput");
+            if (nameInput) {
+                nameInput.value = "";
+                nameInput.placeholder = `Mijn Profiel (${screenerState.timeframe.toUpperCase()})`;
+            }
+            const descInput = document.getElementById("newProfileDescInput");
+            if (descInput) descInput.value = "";
+
+            const overlay = document.getElementById("saveProfileModalOverlay");
+            if (overlay) overlay.classList.add("active");
+            if (nameInput) setTimeout(() => nameInput.focus(), 100);
+        }
+
+        function closeSaveProfileModal() {
+            const overlay = document.getElementById("saveProfileModalOverlay");
+            if (overlay) overlay.classList.remove("active");
+        }
+
+        function confirmSaveProfile() {
+            const nameInput = document.getElementById("newProfileNameInput");
+            let name = nameInput ? nameInput.value.trim() : '';
+            if (!name) {
+                name = `Mijn Profiel (${screenerState.timeframe.toUpperCase()})`;
+            }
+            if (!name.startsWith('★') && !name.startsWith('🎯') && !name.startsWith('🌟')) {
+                name = '🎯 ' + name;
+            }
+            const descInput = document.getElementById("newProfileDescInput");
+            const desc = descInput ? descInput.value.trim() : '';
+
+            const newId = 'custom_' + Date.now();
+            const newProfile = {
+                id: newId,
+                name: name,
+                description: desc || 'Zelf samengesteld profiel',
+                timeframe: screenerState.timeframe,
+                excludeCyclical: screenerState.excludeCyclical,
+                requireFullHistory: screenerState.requireFullHistory,
+                params: JSON.parse(JSON.stringify(screenerState.params))
+            };
+
+            const list = getProfilesList();
+            list.push(newProfile);
+            saveProfilesList(list);
+
+            screenerState.activePreset = newId;
+            saveScreenerState();
+            closeSaveProfileModal();
+            updateScreenerUI();
+            filterAndRender();
+        }
+
+        // Modal: Manage Profiles
+        function openManageProfilesModal() {
+            renderManageProfilesList();
+            const overlay = document.getElementById("manageProfilesModalOverlay");
+            if (overlay) overlay.classList.add("active");
+        }
+
+        function closeManageProfilesModal() {
+            const overlay = document.getElementById("manageProfilesModalOverlay");
+            if (overlay) overlay.classList.remove("active");
+        }
+
+        function renderManageProfilesList() {
+            const container = document.getElementById("manageProfilesList");
+            if (!container) return;
+            const list = getProfilesList();
+
+            let html = '';
+            list.forEach((p, idx) => {
+                const isSelected = p.id === screenerState.activePreset;
+                html += `
+                <div class="profile-manage-item" style="${isSelected ? 'border-color: #007bff; background: rgba(0, 123, 255, 0.04);' : 'border-color: #e2e8f0; background: #ffffff;'} padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-width: 1px; border-style: solid;">
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span style="font-weight: 800; font-size: 15px; color: #0f172a !important;">${p.name}</span>
+                            ${isSelected ? '<span style="font-size: 10px; background: rgba(0, 123, 255, 0.15); color: #007bff; padding: 2px 7px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(0,123,255,0.3);">ACTIEF</span>' : ''}
+                        </div>
+                        <div style="font-size: 11.5px; color: #475569; line-height: 1.5;">
+                            ${formatProfileSummary(p)}
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-eg-tool" onclick="updateProfileWithCurrentFilters('${p.id}')" title="Werk dit profiel bij met de huidige actieve filters op het scherm" style="padding: 6px 12px; font-size: 12px; font-weight: 600; color: #0f172a; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer;">
+                            <i class="fa-solid fa-arrows-rotate me-1" style="color: #007bff;"></i> Update
+                        </button>
+                        ${list.length > 1 ? `
+                        <button class="btn-eg-tool" onclick="deleteProfile('${p.id}')" title="Verwijder dit profiel uit de lijst" style="padding: 6px 10px; font-size: 12px; color: #dc2626; background: #ffffff; border: 1px solid #fecaca; border-radius: 6px; cursor: pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>` : ''}
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function updateProfileWithCurrentFilters(profileId) {
+            const list = getProfilesList();
+            const p = list.find(item => item.id === profileId);
+            if (!p) return;
+
+            p.timeframe = screenerState.timeframe;
+            p.excludeCyclical = screenerState.excludeCyclical;
+            p.requireFullHistory = screenerState.requireFullHistory;
+            p.params = JSON.parse(JSON.stringify(screenerState.params));
+
+            saveProfilesList(list);
+            screenerState.activePreset = profileId;
+            saveScreenerState();
+            renderManageProfilesList();
+            updateScreenerUI();
+        }
+
+        function deleteProfile(profileId) {
+            let list = getProfilesList();
+            if (list.length <= 1) return;
+            list = list.filter(item => item.id !== profileId);
+            saveProfilesList(list);
+
+            if (screenerState.activePreset === profileId) {
+                screenerState.activePreset = list[0].id;
+                applyPreset(list[0].id);
+            } else {
+                updateScreenerUI();
+                renderManageProfilesList();
+            }
+        }
+
+        function resetDefaultProfiles() {
+            if (!confirm("Weet je zeker dat je alle profielen wilt resetten naar de standaardlijst?")) return;
+            localStorage.removeItem('eg_toppers_custom_profiles_v3');
+            localStorage.removeItem('eg_toppers_custom_profiles_v2');
+            localStorage.removeItem('eg_toppers_screener_v6');
+            localStorage.removeItem('eg_toppers_screener_v5');
+            screenerState = JSON.parse(JSON.stringify(DEFAULT_SCREENER_STATE));
+            const list = getProfilesList();
+            screenerState.activePreset = list[0].id;
+            applyPreset(list[0].id);
+            renderManageProfilesList();
+        }
+
+        // Toggle 'Any' for a parameter
+        function toggleAny(paramKey) {
+            screenerState.activePreset = 'custom';
+            const p = screenerState.params[paramKey];
+            p.isAny = !p.isAny;
+            updateScreenerUI();
+            saveScreenerState();
+            filterAndRender();
+            if (currentSelectedStock) {
+                renderProfileAndFactors(currentSelectedStock);
+            }
+        }
+
+        function onParamInput(paramKey) {
+            screenerState.activePreset = 'custom';
+            const inputId = 'input' + paramKey.charAt(0).toUpperCase() + paramKey.slice(1);
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            const val = parseFloat(input.value);
+            if (isNaN(val)) {
+                screenerState.params[paramKey].isAny = true;
+            } else {
+                screenerState.params[paramKey].isAny = false;
+                screenerState.params[paramKey].val = val;
+            }
+            updateScreenerUI();
+            saveScreenerState();
+            filterAndRender();
+            if (currentSelectedStock) {
+                renderProfileAndFactors(currentSelectedStock);
+            }
+        }
+
+        function onParamChange() {
+            screenerState.activePreset = 'custom';
+            const chk = document.getElementById("chkExcludeCyclical");
+            if (chk) screenerState.excludeCyclical = chk.checked;
+            const chkHist = document.getElementById("chkRequireFullHistory");
+            if (chkHist) screenerState.requireFullHistory = chkHist.checked;
+            saveScreenerState();
+            filterAndRender();
+        }
+
+        // Synchronize state with HTML inputs and buttons
+        function updateScreenerUI() {
+            // Timeframe pills
+            document.querySelectorAll(".timeframe-pill").forEach(pill => {
+                pill.classList.toggle("active", pill.getAttribute("data-tf") === screenerState.timeframe);
+            });
+
+            // Populate & update Profile Dropdown
+            populateProfileDropdown();
+
+            // Checkboxes
+            const chk = document.getElementById("chkExcludeCyclical");
+            if (chk) chk.checked = screenerState.excludeCyclical;
+            const chkHist = document.getElementById("chkRequireFullHistory");
+            if (chkHist) chkHist.checked = screenerState.requireFullHistory !== false;
+
+            const lblHist = document.getElementById("labelRequireFullHistory");
+            if (lblHist) {
+                const tfName = screenerState.timeframe === '10y' ? '10 jaar' : (screenerState.timeframe === '5y' ? '5 jaar' : (screenerState.timeframe === '3y' ? '3 jaar' : '1 jaar'));
+                lblHist.textContent = `Alleen bedrijven met >= ${tfName} historie`;
+            }
+
+            // Update Labels with active timeframe
+            const tfLbl = getTimeframeLabel();
+            const lblPrice = document.getElementById("labelPriceGrowth");
+            if (lblPrice) lblPrice.textContent = `Koersgr./jr (${tfLbl})`;
+            const lblTk = document.getElementById("labelTk");
+            if (lblTk) lblTk.textContent = `Min. TK / R² (${tfLbl})`;
+
+            // Table headers
+            const thPrice = document.getElementById("thColPriceGrowth");
+            if (thPrice) thPrice.innerHTML = `Koers (${tfLbl}) <i class="fa-solid fa-sort"></i>`;
+            const thTk = document.getElementById("thColTk");
+            if (thTk) thTk.innerHTML = `TK (${tfLbl}) <i class="fa-solid fa-sort"></i>`;
+
+            // Param inputs & Any buttons
+            const pKeys = ['roic', 'rev', 'eps', 'margin', 'priceGrowth', 'tk'];
+            pKeys.forEach(k => {
+                const p = screenerState.params[k];
+                const cap = k.charAt(0).toUpperCase() + k.slice(1);
+                const btn = document.getElementById('anyBtn' + cap);
+                const inp = document.getElementById('input' + cap);
+                if (btn && inp) {
+                    btn.classList.toggle("active", p.isAny);
+                    inp.classList.toggle("is-any", p.isAny);
+                    if (p.isAny) {
+                        inp.value = "";
+                        inp.placeholder = "Any";
+                    } else {
+                        inp.value = p.val;
+                        inp.placeholder = "";
+                    }
+                }
+            });
+        }
+
+        // Live API Refresh for all companies
+        async function refreshLiveApiData() {
+            const btn = document.getElementById("btnLiveSync");
+            const btnText = document.getElementById("refreshBtnText");
+            if (btnText) btnText.textContent = "Bezig met laden...";
+            if (btn) btn.style.opacity = "0.7";
+
+            try {
+                const res = await fetch(`${BASE_API_URL}/searchStocks`);
+                const rawStocks = await res.json();
+                const symbols = rawStocks.map(s => s.Company || s.symbol).filter(Boolean);
+
+                const chunkSize = 150;
+                const chunks = [];
+                for (let i = 0; i < symbols.length; i += chunkSize) {
+                    chunks.push(symbols.slice(i, i + chunkSize));
+                }
+
+                const batchPromises = chunks.map(chunk => 
+                    fetch(`${BASE_API_URL}/readstocks?user_name=ivo&stocklist=${encodeURIComponent(chunk.join(','))}`)
+                        .then(r => r.json())
+                        .catch(() => [])
+                );
+
+                const results = await Promise.all(batchPromises);
+                const flattened = results.flat();
+
+                window.egLiveUniverse = flattened.map(d => ({
+                    Symbol: (d.Company || d.Symbol || '').trim().toUpperCase(),
+                    Name: d.Name || d.Company,
+                    Industry: d.Industry || 'N/A',
+                    Sector: d.Sector || 'N/A',
+                    Price: parseFloat(d.Value || d.FairValue || d.HoogstePrijs || 0),
+                    ROIC: parseFloat(d.AvgRoic5y || 0),
+                    EPSGrowth: Math.max(parseFloat(d.LTEpsGrowth || 0), parseFloat(d.WpaGroei || 0)),
+                    RevGrowth: Math.max(parseFloat(d.RevGrowth5y || 0), parseFloat(d.OmzetGroei || 0)),
+                    NetProfitMargin: parseFloat(d.NetProfitMargin || 0),
+                    Perf1Y: parseFloat(d.Perf1Y || 0),
+                    Perf3Y: parseFloat(d.Perf3Y || 0),
+                    Perf5Y: parseFloat(d.Perf5Y || 0),
+                    DebtEquity: parseFloat(d.DebtEquityRatio || 0),
+                    CurrentRatio: parseFloat(d.CurrentRatio || 0),
+                    FairValue: parseFloat(d.FairValue || 0),
+                    Rating: parseFloat(d.Rating || 50)
+                }));
+
+                if (btnText) btnText.textContent = "Live Gesynchroniseerd ✓";
+                filterAndRender();
+            } catch(e) {
+                console.error("Live API Sync mislukt:", e);
+                if (btnText) btnText.textContent = "Sync Mislukt (Offline Data)";
+            }
+
+            setTimeout(() => {
+                if (btnText) btnText.textContent = "Live Sync API";
+                if (btn) btn.style.opacity = "1";
+            }, 3000);
+        }
+
+        // Fetch quotes on-demand for candidates and calculate metrics
+        async function enrichCandidatesWithQuotes(candidates, days) {
+            const needQuotes = candidates.filter(c => !window.quoteCache[c.Symbol]);
+            if (needQuotes.length === 0) return;
+
+            let updated = false;
+            const fetchPromises = needQuotes.slice(0, 50).map(c => 
+                fetch(`${BASE_API_URL}/stockquotes?symbol=${encodeURIComponent(c.Symbol)}`)
+                    .then(r => r.json())
+                    .then(q => {
+                        if (q && q.length > 0) {
+                            window.quoteCache[c.Symbol] = q.map(x => parseFloat(x[4]));
+                            updated = true;
+                        }
+                    })
+                    .catch(() => {})
+            );
+
+            await Promise.all(fetchPromises);
+            if (updated) {
+                filterAndRender();
+            }
+        }
+
+        // Active filtered symbol list for 1-click copy
+        let activeFilteredSymbols = [];
+
+        // Main Filtering & Rendering Routine
+        async function filterAndRender() {
+            const universe = getStocksUniverse();
+            const search = (document.getElementById("searchInput") ? document.getElementById("searchInput").value : "").trim().toLowerCase();
+            const industry = document.getElementById("industryFilter") ? document.getElementById("industryFilter").value : "";
+
+            const days = getTimeframeDays();
+            const years = days / 252.0;
+
+            const excludedSectors = ['marine shipping', 'gold', 'silver', 'oil & gas exploration'];
+
+            // 1. Stage 1: Fundamental Filtering
+            let candidates = universe.filter(item => {
+                // Search filter
+                const matchSearch = !search || 
+                    item.Symbol.toLowerCase().includes(search) ||
+                    item.Name.toLowerCase().includes(search) ||
+                    (item.Industry && item.Industry.toLowerCase().includes(search));
+                if (!matchSearch) return false;
+
+                // Industry dropdown
+                if (industry && item.Industry !== industry) return false;
+
+                // Cyclical exclusion
+                if (screenerState.excludeCyclical) {
+                    const ind = (item.Industry || '').toLowerCase();
+                    if (excludedSectors.some(x => ind.includes(x))) return false;
+                }
+
+                // ROIC
+                if (!screenerState.params.roic.isAny && item.ROIC < screenerState.params.roic.val) return false;
+
+                // Omzetgroei
+                if (!screenerState.params.rev.isAny && item.RevGrowth < screenerState.params.rev.val) return false;
+
+                // Winstgroei (EPS)
+                if (!screenerState.params.eps.isAny && item.EPSGrowth < screenerState.params.eps.val) return false;
+
+                // Nettowinstmarge
+                if (!screenerState.params.margin.isAny && item.NetProfitMargin < screenerState.params.margin.val) return false;
+
+                // Initial history requirement filter (exclude young companies if full history required)
+                if (screenerState.requireFullHistory !== false) {
+                    if (screenerState.timeframe === '10y') {
+                        if (item.QuotesCount !== undefined && item.QuotesCount < 2100) return false;
+                        if (!item.Perf5Y || item.Perf5Y === 0) return false;
+                    } else if (screenerState.timeframe === '5y') {
+                        if (item.QuotesCount !== undefined && item.QuotesCount < 1000) return false;
+                        if (!item.Perf5Y || item.Perf5Y === 0) return false;
+                    } else if (screenerState.timeframe === '3y') {
+                        if (item.QuotesCount !== undefined && item.QuotesCount < 600) return false;
+                        if (!item.Perf3Y || item.Perf3Y === 0) return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // 2. Compute or approximate PriceGrowth & TK from available performance or quotes
+            candidates.forEach(item => {
+                let hasHistory = true;
+                let approxRet = 0;
+
+                if (screenerState.timeframe === '10y') {
+                    if (!item.Perf5Y || item.Perf5Y === 0) {
+                        hasHistory = false;
+                    } else {
+                        approxRet = (Math.pow(1 + Math.max(-0.99, item.Perf5Y / 100), 1 / 5.0) - 1) * 100;
+                    }
+                } else if (screenerState.timeframe === '5y') {
+                    if (!item.Perf5Y || item.Perf5Y === 0) {
+                        hasHistory = false;
+                    } else {
+                        approxRet = (Math.pow(1 + Math.max(-0.99, item.Perf5Y / 100), 1 / 5.0) - 1) * 100;
+                    }
+                } else if (screenerState.timeframe === '3y') {
+                    if (!item.Perf3Y || item.Perf3Y === 0) {
+                        hasHistory = false;
+                    } else {
+                        approxRet = (Math.pow(1 + Math.max(-0.99, item.Perf3Y / 100), 1 / 3.0) - 1) * 100;
+                    }
+                } else {
+                    approxRet = item.Perf1Y || 0;
+                }
+
+                item.hasEnoughHistory = hasHistory;
+                item.computedPriceGrowth = Math.round(approxRet * 10) / 10;
+                item.computedTK = item.Rating || 55.0;
+
+                // If precalculated metrics present on item (e.g. from eg_live_universe.js)
+                if (screenerState.timeframe === '10y' && item.TK10_r2 !== undefined) {
+                    item.computedTK = item.TK10_r2;
+                    item.computedPriceGrowth = item.Ret10;
+                    item.hasEnoughHistory = true;
+                } else if (screenerState.timeframe === '5y' && item.TK5_r2 !== undefined) {
+                    item.computedTK = item.TK5_r2;
+                    item.computedPriceGrowth = item.Ret5;
+                    item.hasEnoughHistory = true;
+                } else if (screenerState.timeframe === '3y' && item.TK3_r2 !== undefined) {
+                    item.computedTK = item.TK3_r2;
+                    item.computedPriceGrowth = item.Ret3;
+                    item.hasEnoughHistory = true;
+                } else if (screenerState.timeframe === '1y' && item.TK1_r2 !== undefined) {
+                    item.computedTK = item.TK1_r2;
+                    item.computedPriceGrowth = item.Ret1;
+                    item.hasEnoughHistory = true;
+                }
+
+                // If quotes already in cache, calculate EXACT log-linear regression & check exact quote length
+                const cachedPrices = window.quoteCache[item.Symbol];
+                if (cachedPrices && cachedPrices.length >= 20) {
+                    const metrics = calcLogRegTk(cachedPrices, days);
+                    item.hasEnoughHistory = metrics.hasEnoughHistory;
+                    item.historyYears = metrics.historyYears;
+                    item.computedTK = metrics.tk;
+                    item.computedPriceGrowth = metrics.retAnn;
+                    item.r2 = metrics.r2;
+                }
+            });
+
+            // 3. Stage 2: Technical Filtering (Koersgroei, TK & History)
+            let finalFiltered = candidates.filter(item => {
+                if (screenerState.requireFullHistory !== false && !item.hasEnoughHistory) return false;
+                if (!screenerState.params.priceGrowth.isAny && item.computedPriceGrowth < screenerState.params.priceGrowth.val) return false;
+                if (!screenerState.params.tk.isAny && item.computedTK < screenerState.params.tk.val) return false;
+                return true;
+            });
+
+            // Store symbols for 1-click copy
+            activeFilteredSymbols = finalFiltered.map(x => x.Symbol);
+
+            // Update Results Badge Counter
+            const countText = document.getElementById("resultsCountText");
+            if (countText) {
+                countText.textContent = `Gevonden: ${finalFiltered.length} aandelen (van de ${universe.length})`;
+            }
+
+            // Sort Table
+            finalFiltered.sort((a, b) => {
+                let valA, valB;
+                if (currentSort.col === 'Symbol' || currentSort.col === 'Name' || currentSort.col === 'Industry') {
+                    valA = a[currentSort.col] || '';
+                    valB = b[currentSort.col] || '';
+                    return currentSort.desc ? valB.localeCompare(valA) : valA.localeCompare(valB);
+                } else if (currentSort.col === 'Price') {
+                    valA = a.Price; valB = b.Price;
+                } else if (currentSort.col === 'ROIC') {
+                    valA = a.ROIC; valB = b.ROIC;
+                } else if (currentSort.col === 'RevGrowth') {
+                    valA = a.RevGrowth; valB = b.RevGrowth;
+                } else if (currentSort.col === 'EPSGrowth') {
+                    valA = a.EPSGrowth; valB = b.EPSGrowth;
+                } else if (currentSort.col === 'NetProfitMargin') {
+                    valA = a.NetProfitMargin; valB = b.NetProfitMargin;
+                } else if (currentSort.col === 'PriceGrowth') {
+                    valA = a.computedPriceGrowth; valB = b.computedPriceGrowth;
+                } else if (currentSort.col === 'TK') {
+                    valA = a.computedTK; valB = b.computedTK;
+                } else {
+                    valA = a.Rating || a.EGS || 50; valB = b.Rating || b.EGS || 50;
+                }
+                return currentSort.desc ? (valB - valA) : (valA - valB);
+            });
+
+            // Auto-select first stock if no valid selection or previous selection is filtered out
+            const isSelectedInList = finalFiltered.some(x => x.Symbol === selectedSymbol);
+            if (!isSelectedInList && finalFiltered.length > 0) {
+                selectedSymbol = finalFiltered[0].Symbol;
+            }
+
+            // Render Table Rows
+            const tableBody = document.getElementById("tableBody");
+            if (!tableBody) return;
+            tableBody.innerHTML = "";
+
+            if (finalFiltered.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="10" class="no-data-msg" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                    <i class="fa-solid fa-filter-circle-xmark mb-2" style="font-size: 26px; color: var(--color-warning);"></i><br>
+                    Geen aandelen gevonden met de huidige criteria. Klik op 'Alle Aandelen' of zet enkele parameters op 'Any'.
+                </td></tr>`;
+                return;
+            }
+
+            finalFiltered.forEach(item => {
+                const tr = document.createElement("tr");
+                if (selectedSymbol === item.Symbol) tr.classList.add("selected");
+                tr.onclick = () => selectStock(item);
+
+                const roicColor = item.ROIC >= 20 ? "#16a34a" : (item.ROIC >= 12 ? "#007bff" : "#64748b");
+                const revColor = item.RevGrowth >= 20 ? "#16a34a" : (item.RevGrowth >= 12 ? "#007bff" : "#64748b");
+                const epsColor = item.EPSGrowth >= 20 ? "#16a34a" : (item.EPSGrowth >= 12 ? "#007bff" : "#64748b");
+                const marginColor = item.NetProfitMargin >= 20 ? "#16a34a" : (item.NetProfitMargin >= 12 ? "#007bff" : "#64748b");
+                const priceColor = item.computedPriceGrowth >= 15 ? "#16a34a" : (item.computedPriceGrowth >= 0 ? "#007bff" : "#dc2626");
+                const tkColor = item.computedTK >= 65 ? "#16a34a" : (item.computedTK >= 50 ? "#007bff" : "#d97706");
+
+                const symId = item.Symbol.replace(/[^a-zA-Z0-9]/g, '_');
+                tr.innerHTML = `
+                    <td class="bold-symbol">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <span>${item.Symbol}</span>
+                            <a href="https://www.easygrowth.org/company/${encodeURIComponent(item.Symbol)}" target="EasyGrowthWindow" title="Bekijk direct op EasyGrowth.org" class="row-eg-link" onclick="event.stopPropagation();">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </td>
+                    <td class="name-cell company-cell">
+                        <div class="company-name" title="${item.Name}">${item.Name}</div>
+                        <div class="company-industry-sub" title="${item.Industry}">${item.Industry}</div>
+                    </td>
+                    <td class="name-cell col-industry" title="${item.Industry}">${item.Industry}</td>
+                    <td style="text-align: right; font-weight:700;">$${item.Price.toFixed(2)}</td>
+                    <td style="text-align: center; font-weight: 700; color: ${roicColor};">${item.ROIC.toFixed(1)}%</td>
+                    <td style="text-align: center; font-weight: 700; color: ${revColor};">${item.RevGrowth > 0 ? '+' : ''}${item.RevGrowth.toFixed(1)}%</td>
+                    <td style="text-align: center; font-weight: 700; color: ${epsColor};">${item.EPSGrowth > 0 ? '+' : ''}${item.EPSGrowth.toFixed(1)}%</td>
+                    <td style="text-align: center; font-weight: 700; color: ${marginColor};">${item.NetProfitMargin.toFixed(1)}%</td>
+                    <td id="retCell_${symId}" style="text-align: center; font-weight: 700; color: ${priceColor};">${item.computedPriceGrowth > 0 ? '+' : ''}${item.computedPriceGrowth.toFixed(1)}%</td>
+                    <td id="tkCell_${symId}" style="text-align: center; font-weight: 800; color: ${tkColor}; font-size: 15px;">${item.computedTK.toFixed(1)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Automatically sync selected stock (or first in table) to detail drawer & EasyGrowth
+            if (finalFiltered.length > 0) {
+                const stockToSelect = finalFiltered.find(x => x.Symbol === selectedSymbol) || finalFiltered[0];
+                selectStock(stockToSelect);
+            }
+
+            // Asynchronously enrich qualifying candidates with live quotes
+            enrichCandidatesWithQuotes(candidates.slice(0, 50), days);
+        }
+
+        // 1-Click Copy Tickers without spaces
+        function copyFilteredTickers() {
+            if (!activeFilteredSymbols || activeFilteredSymbols.length === 0) {
+                alert("Geen symbolen om te kopiëren.");
+                return;
+            }
+            const csv = activeFilteredSymbols.join(',');
+            navigator.clipboard.writeText(csv).then(() => {
+                const btn = document.querySelector(".btn-copy-tickers");
+                if (btn) {
+                    const oldHtml = btn.innerHTML;
+                    btn.innerHTML = `<i class="fa-solid fa-check"></i> Gekopieerd (${activeFilteredSymbols.length})!`;
+                    btn.style.background = "#16a34a";
+                    btn.style.color = "#ffffff";
+                    setTimeout(() => {
+                        btn.innerHTML = oldHtml;
+                        btn.style.background = "";
+                        btn.style.color = "";
+                    }, 2000);
+                }
+            }).catch(e => {
+                prompt("Kopieer de tickers hieronder:", csv);
+            });
+        }
+
+        // Sort toggle helper
+        function sortTable(column) {
+            if (currentSort.col === column) {
+                currentSort.desc = !currentSort.desc;
+            } else {
+                currentSort.col = column;
+                currentSort.desc = true;
+            }
+
+            const headers = document.querySelectorAll("#tableHeaders th");
+            const columnsList = ['Symbol', 'Name', 'Industry', 'Price', 'ROIC', 'RevGrowth', 'EPSGrowth', 'NetProfitMargin', 'PriceGrowth', 'TK'];
+            
+            headers.forEach((h, idx) => {
+                const colName = columnsList[idx];
+                const iconClass = (currentSort.col === colName) 
+                    ? (currentSort.desc ? "fa-solid fa-sort-down" : "fa-solid fa-sort-up") 
+                    : "fa-solid fa-sort";
+                const baseText = h.textContent.trim().split(' ')[0];
+                h.innerHTML = `${baseText} <i class="${iconClass}"></i>`;
+            });
+
+            filterAndRender();
+        }
+
+        // Drawer handling & selection
+        function selectStock(item) {
+            selectedSymbol = item.Symbol;
+            currentSelectedStock = item;
+            
+            const rows = document.querySelectorAll("#tableBody tr");
+            rows.forEach(r => {
+                const symCell = r.querySelector(".bold-symbol span");
+                if (symCell && symCell.textContent.trim() === item.Symbol) {
+                    r.classList.add("selected");
+                } else {
+                    r.classList.remove("selected");
+                }
+            });
+
+            const drawer = document.getElementById("detailDrawer");
+            drawer.classList.add("open");
+            const currentW = drawer.style.width || '50vw';
+            document.documentElement.style.setProperty('--drawer-width', currentW);
+            document.getElementById("mainContainer").classList.add("drawer-open");
+
+            document.getElementById("drawerSymbol").textContent = item.Symbol;
+            document.getElementById("drawerName").textContent = item.Name;
+
+            // Radial Rings (ROIC, Nettomarge, Winstgroei, TK / R²)
+            const tfLbl = getTimeframeLabel();
+            const lblTk = document.getElementById("labelGaugeTk");
+            if (lblTk) lblTk.textContent = `TK / R² (${tfLbl})`;
+
+            updateRadialRing("gaugeRoicFill", "gaugeRoicVal", item.ROIC, "#16a34a", 40, true);
+            updateRadialRing("gaugeMarginFill", "gaugeMarginVal", item.NetProfitMargin, "#007bff", 35, true);
+            updateRadialRing("gaugeEpsFill", "gaugeEpsVal", item.EPSGrowth, "#ea580c", 50, true, true);
+            updateRadialRing("gaugeTkFill", "gaugeTkVal", item.computedTK, "#9333ea", 100, false);
+
+            renderProfileAndFactors(item);
+
+            // EasyGrowth Sync (Iframe & URLs)
+            const egUrl = `https://www.easygrowth.org/company/${encodeURIComponent(item.Symbol)}`;
+            const egIframe = document.getElementById("easygrowthIframe");
+            if (egIframe && egIframe.src !== egUrl) {
+                egIframe.src = egUrl;
+            }
+            const egUrlLabel = document.getElementById("easygrowthUrlLabel");
+            if (egUrlLabel) egUrlLabel.textContent = egUrl;
+            const popoutBtn = document.getElementById("easygrowthPopoutBtn");
+            if (popoutBtn) popoutBtn.href = egUrl;
+            const directLink = document.getElementById("egDirectLink");
+            if (directLink) directLink.href = egUrl;
+
+            if (syncEnabled && syncWindow && !syncWindow.closed) {
+                syncWindow.location.href = egUrl;
+            }
+
+            switchDrawerTab(activeDrawerTab);
+        }
+
+        function closeDrawer() {
+            selectedSymbol = null;
+            document.getElementById("detailDrawer").classList.remove("open");
+            document.getElementById("mainContainer").classList.remove("drawer-open");
+            document.documentElement.style.setProperty('--drawer-width', '0px');
+            
+            const rows = document.querySelectorAll("#tableBody tr");
+            rows.forEach(r => r.classList.remove("selected"));
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        function updateRadialRing(fillId, valId, value, strokeColor, maxVal = 100, isPercent = false, withPlus = false) {
+            const fillElement = document.getElementById(fillId);
+            const valElement = document.getElementById(valId);
+            if (!fillElement || !valElement) return;
+
+            const num = parseFloat(value) || 0;
+            const capValue = Math.min(Math.max(num, 0.0), maxVal);
+            const percentage = (capValue / maxVal) * 100;
+            const r = 31;
+            const circ = 2 * Math.PI * r;
+            const strokeDashoffset = circ - (percentage / 100) * circ;
+            
+            fillElement.style.strokeDasharray = circ;
+            fillElement.style.strokeDashoffset = strokeDashoffset;
+            fillElement.setAttribute("stroke", strokeColor);
+            
+            let displayStr = (withPlus && num > 0 ? '+' : '') + num.toFixed(1);
+            if (isPercent) displayStr += '%';
+            valElement.textContent = displayStr;
+        }
+
+        function updateDrawerWidth(widthStr) {
+            const drawer = document.getElementById("detailDrawer");
+            drawer.style.width = widthStr;
+            document.documentElement.style.setProperty('--drawer-width', widthStr);
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        function setDrawerWidth(mode) {
+            if (mode === '50%') updateDrawerWidth('50vw');
+            else if (mode === 'fullscreen') updateDrawerWidth('calc(100vw - 80px)');
+            else updateDrawerWidth('50vw');
+        }
+
+        function switchDrawerTab(tab) {
+            activeDrawerTab = tab;
+            const toppersContent = document.getElementById("drawerBodyToppers");
+            const egContent = document.getElementById("easygrowthTabContent");
+            const btnToppers = document.getElementById("tabBtnToppers");
+            const btnEG = document.getElementById("tabBtnEasyGrowth");
+            const drawer = document.getElementById("detailDrawer");
+            
+            if (btnToppers) btnToppers.classList.toggle("active", tab === 'toppers');
+            if (btnEG) btnEG.classList.toggle("active", tab === 'easygrowth');
+            
+            if (tab === 'toppers') {
+                toppersContent.style.display = 'flex';
+                toppersContent.style.width = '100%';
+                toppersContent.style.flex = '1';
+                toppersContent.style.borderRight = 'none';
+                egContent.style.display = 'none';
+                if (currentSelectedStock) {
+                    renderProfileAndFactors(currentSelectedStock);
+                }
+            } else {
+                toppersContent.style.display = 'none';
+                egContent.style.display = 'flex';
+                egContent.style.flex = '1';
+                if (!drawer.style.width) updateDrawerWidth('50vw');
+            }
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        function openEasygrowthWindow() {
+            if (!selectedSymbol) return;
+            const url = `https://www.easygrowth.org/company/${encodeURIComponent(selectedSymbol)}`;
+            syncWindow = window.open(url, 'EasyGrowthSyncWindow');
+            syncEnabled = true;
+            updateSyncButtonUI();
+        }
+
+        function toggleWindowSync() {
+            syncEnabled = !syncEnabled;
+            if (syncEnabled && selectedSymbol) {
+                const url = `https://www.easygrowth.org/company/${encodeURIComponent(selectedSymbol)}`;
+                syncWindow = window.open(url, 'EasyGrowthSyncWindow');
+            }
+            updateSyncButtonUI();
+        }
+
+        function updateSyncButtonUI() {
+            const btn = document.getElementById("btnSyncWindow");
+            const text = document.getElementById("syncBtnText");
+            if (!btn) return;
+            if (syncEnabled) {
+                btn.classList.add("active");
+                if (text) text.textContent = "2e Scherm Gekoppeld ✓";
+            } else {
+                btn.classList.remove("active");
+                if (text) text.textContent = "Koppel 2e Scherm";
+            }
+        }
+
+        function reloadEasygrowthFrame() {
+            const frame = document.getElementById("easygrowthIframe");
+            if (frame && frame.src) frame.src = frame.src;
+        }
+
+        // Initialize App on DOMContentLoaded
+        document.addEventListener("DOMContentLoaded", () => {
+            const universe = getStocksUniverse();
+
+            // Populate Industry dropdown
+            const industries = [...new Set(universe.map(item => item.Industry).filter(i => i && i !== 'N/A'))].sort();
+            const industryFilter = document.getElementById("industryFilter");
+            if (industryFilter) {
+                industries.forEach(i => {
+                    const opt = document.createElement("option");
+                    opt.value = i;
+                    opt.textContent = i;
+                    industryFilter.appendChild(opt);
+                });
+                industryFilter.addEventListener("change", filterAndRender);
+            }
+
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) {
+                searchInput.addEventListener("input", filterAndRender);
+            }
+
+            // Sync initial Screener UI with LocalStorage
+            updateScreenerUI();
+
+            // Initial Render (automatically selects the first stock of the active profile)
+            filterAndRender();
+
+            checkTableWidth();
+        });
+
+        // Responsive Table Layout Handler
+        function checkTableWidth() {
+            const tableCard = document.querySelector(".table-card");
+            if (!tableCard) return;
+            // Switch to compact (Industry under company name) when table width drops below 1200px
+            const isNarrow = tableCard.clientWidth < 1200;
+            tableCard.classList.toggle("compact-table-mode", isNarrow);
+            document.body.classList.toggle("compact-table-mode", isNarrow);
+        }
+
+        window.addEventListener('resize', checkTableWidth);
+        document.addEventListener('DOMContentLoaded', () => {
+            const tc = document.querySelector(".table-card");
+            if (tc && window.ResizeObserver) {
+                new ResizeObserver(checkTableWidth).observe(tc);
+            }
+        });
+
+        // Drawer Drag-to-Resize Logic
+        document.addEventListener("DOMContentLoaded", () => {
+            const drawer = document.getElementById("detailDrawer");
+            const resizer = document.getElementById("drawerResizer");
+            if (!resizer || !drawer) return;
+            
+            let isResizing = false;
+
+            resizer.addEventListener("mousedown", (e) => {
+                isResizing = true;
+                document.body.classList.add("is-resizing");
+                document.body.style.cursor = "ew-resize";
+                document.body.style.userSelect = "none";
+            });
+
+            document.addEventListener("mousemove", (e) => {
+                if (!isResizing) return;
+                const newWidth = document.body.clientWidth - e.clientX;
+                const minWidth = 380;
+                const maxWidth = Math.max(document.body.clientWidth - 280, 500);
+                if (newWidth >= minWidth && newWidth <= maxWidth) {
+                    updateDrawerWidth(`${newWidth}px`);
+                }
+            });
+
+            document.addEventListener("mouseup", () => {
+                if (isResizing) {
+                    isResizing = false;
+                    document.body.classList.remove("is-resizing");
+                    document.body.style.cursor = "";
+                    document.body.style.userSelect = "";
+                    window.dispatchEvent(new Event('resize'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
