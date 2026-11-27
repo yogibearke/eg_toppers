@@ -41,12 +41,24 @@ Het project is bewust minimaal en overzichtelijk gehouden:
 
 ```text
 Eg_toppers/
-├── index.html            # De volledige webapplicatie (UI, screener, profielen & grafiekkoppeling)
+├── index.html            # De volledige webapplicatie (Desktop + GSM UI & PWA-ondersteuning)
 ├── eg_live_universe.js   # Gecachte dataset van 2.089 aandelen incl. voorberekende 1J/3J/5J/10J metrics
+├── manifest.json         # Web App Manifest (voor installatie als standalone app op GSM & pc)
+├── sw.js                 # Service Worker voor snelle laadtijden & offline fallback
+├── icon.svg              # Scherp vector app-icoon voor het startscherm
 ├── update_universe.py    # Optioneel Python-script om eg_live_universe.js lokaal te verversen
 ├── .gitignore            # Git-uitsluitingen voor tijdelijke systeembestanden
 └── README.md             # Documentatie
 ```
+
+---
+
+## 📱 Installeren als Webapp op je GSM (iPhone & Android)
+
+**EG_toppers** is een volwaardige **Progressive Web App (PWA)** met een aangepaste mobiele interface:
+* **Android (Chrome):** Open [yogibearke.github.io/eg_toppers](https://yogibearke.github.io/eg_toppers/) en tik bovenaan op **Installeer App** (of kies via het menu `⋮` → *Toevoegen aan startscherm / App installeren*).
+* **iPhone / iPad (Safari):** Open de link in Safari, tik onderaan op het **Deel-icoon** (`⬆️`) en kies **Zet op beginscherm**.
+* **Slimme EasyGrowth-koppeling op GSM:** Op mobiel klapt het zijpaneel niet ongewenst over de lijst heen en zijn gedetailleerde filters netjes inklapbaar. Tik je op een aandeel, dan zie je direct de **Profiel & Factoren**-analyse én een grote knop om het aandeel rechtstreeks op volledig scherm te openen in de **EasyGrowth webapp / browser** (met behoud van je eigen EasyGrowth-login).
 
 ---
 
@@ -73,15 +85,9 @@ Omdat de applicatie 100% statisch is, kun je hem gratis en zonder server hosten 
 
 ---
 
-## 🔄 Lokaal Gebruik & Dataset Verversen
+## 🔄 Automatische Data-Update (Elke Weekdag om Middernacht)
 
-* **Lokaal openen:** Start een simpele lokale webserver in deze map:
-  ```bash
-  python -m http.server 8080
-  ```
-  Open daarna `http://localhost:8080` in je browser (of open `index.html` rechtstreeks).
-* **Dataset verversen:** Wil je de offline/gecachte dataset (`eg_live_universe.js`) bijwerken met de nieuwste slotkoersen en fundamentele cijfers uit EasyGrowth vóórdat je een update naar GitHub pusht? Draai dan:
-  ```bash
-  python update_universe.py
-  ```
-  *(Gebruikt uitsluitend de standaardbibliotheek van Python 3 — geen extra installaties nodig).*
+De dataset (`eg_live_universe.js`) wordt **volledig automatisch** ververst via **GitHub Actions** ([.github/workflows/update-universe.yml](.github/workflows/update-universe.yml)):
+* **Schema:** Elke weekdag om **middernacht** (`00:00 CET` / `23:00 UTC`), na het sluiten van zowel de Europese beurzen als Wall Street.
+* **Handmatig starten:** Je kunt ook op elk gewenst moment op GitHub onder het tabblad **Actions → Update EasyGrowth Dataset → Run workflow** met één klik direct een verversing starten.
+* **Lokaal testen:** Start een simpele lokale webserver met `python -m http.server 8080` en open `http://localhost:8080`. Wil je lokaal zelf de data verversen, voer dan `python update_universe.py` uit.

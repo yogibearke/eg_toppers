@@ -1,15 +1,16 @@
 """
 EG_toppers Universe Updater
 ---------------------------
-Optioneel hulpscript om `eg_live_universe.js` lokaal te verversen vanuit de
-EasyGrowth Cloud API (https://www.easygrowth.org/api).
+Haalt alle aandelen, fundamentele cijfers en koershistorie op uit de
+EasyGrowth Cloud API en berekent voor elk aandeel de 1J/3J/5J/10J
+log-lineaire regressie (Koersgroei/jr & Trendkwaliteit R²).
 
-Gebruik:
+Wordt automatisch elke weekdag om middernacht uitgevoerd via GitHub Actions
+(.github/workflows/update-universe.yml), en kan ook lokaal gedraaid worden:
     python update_universe.py
-
-Vereist geen externe packages (enkel de standaard Python 3 bibliotheek).
 """
 
+from datetime import datetime, timezone, timedelta
 import json
 import math
 import urllib.parse
@@ -18,6 +19,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BASE_API_URL = "https://www.easygrowth.org/api"
 OUTPUT_FILE = "eg_live_universe.js"
+MIN_EXPECTED_STOCKS = 500
 
 
 def fetch_json(endpoint: str):
@@ -91,6 +93,11 @@ def main():
     ]
     print(f"   {len(symbols)} symbolen gevonden.")
 
+    if len(symbols) < MIN_EXPECTED_STOCKS:
+        raise RuntimeError(
+            f"Te weinig symbolen ontvangen van API ({len(symbols)} < {MIN_EXPECTED_STOCKS}). Update afgebroken om bestaande data te beschermen."
+        )
+
     print("2. Fundamentele bedrijfsdata ophalen in batches van 150 ...")
     chunk_size = 150
     universe = []
@@ -123,28 +130,28 @@ def main():
                 }
             )
 
+    if len(universe) < MIN_EXPECTED_STOCKS:
+        raise RuntimeError(
+            f"Te weinig fundamentele records ontvangen ({len(universe)} < {MIN_EXPECTED_STOCKS}). Update afgebroken."
+        )
+
     universe.sort(key=lambda x: x["ROIC"], reverse=True)
     print(f"   {len(universe)} aandelen geladen.")
 
-    # Selecteer alle positief presterende / relevante aandelen voor voorberekening van koersregressie
-    candidates = [
-        item["Symbol"]
-        for item in universe
-        if item["ROIC"] >= 8 or item["Perf5Y"] > 0 or item["Perf1Y"] > 15
-    ]
-    print(f"3. Koershistorie ophalen & regressie (R² / TK) berekenen voor {len(candidates)} aandelen ...")
+    all_symbols = [item["Symbol"] for item in universe]
+    print(f"3. Koershistorie ophalen & regressie (R² / TK) berekenen voor alle {len(all_symbols)} aandelen ...")
 
     quotes_map: dict[str, list[float]] = {}
     completed = 0
-    with ThreadPoolExecutor(max_workers=12) as pool:
-        futures = {pool.submit(fetch_quotes_for_symbol, sym): sym for sym in candidates}
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        futures = {pool.submit(fetch_quotes_for_symbol, sym): sym for sym in all_symbols}
         for fut in as_completed(futures):
             sym, prices = fut.result()
             if prices:
                 quotes_map[sym] = prices
             completed += 1
-            if completed % 100 == 0 or completed == len(candidates):
-                print(f"   Verwerkt: {completed} / {len(candidates)}")
+            if completed % 250 == 0 or completed == len(all_symbols):
+                print(f"   Verwerkt: {completed} / {len(all_symbols)}")
 
     for item in universe:
         sym = item["Symbol"]
@@ -152,19 +159,23 @@ def main():
         if not prices:
             continue
         item["QuotesCount"] = len(prices)
-        for label, days, suffix in (("10y", 2520, "10"), ("5y", 1260, "5"), ("3y", 756, "3"), ("1y", 252, "1")):
+        for days, suffix in ((2520, "10"), (1260, "5"), (756, "3"), (252, "1")):
             m = calc_log_reg_metrics(prices, days)
             if m:
                 item[f"TK{suffix}"] = m["tk_r"]
                 item[f"TK{suffix}_r2"] = m["tk_r2"]
                 item[f"Ret{suffix}"] = m["ret"]
 
-    print(f"4. Opslaan naar {OUTPUT_FILE} ...")
+    cet_now = datetime.now(timezone(timedelta(hours=1)))
+    updated_str = cet_now.strftime("%d-%m-%Y")
+
+    print(f"4. Opslaan naar {OUTPUT_FILE} (datum: {updated_str}) ...")
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write("/* Live EasyGrowth Universe Cached Dataset */\n")
+        f.write(f'window.egLastUpdated = "{updated_str}";\n')
         f.write("window.egLiveUniverse = " + json.dumps(universe) + ";\n")
 
-    print("Voltooid! Je kunt eg_live_universe.js nu direct lokaal gebruiken of pushen naar GitHub Pages.")
+    print("Voltooid! Dataset succesvol bijgewerkt.")
 
 
 if __name__ == "__main__":

@@ -2,8 +2,17 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>EG_toppers Stock Dashboard</title>
+    <meta name="description" content="Interactieve screener & beleggingsprofielen voor 2.089 EasyGrowth-aandelen">
+    <meta name="theme-color" content="#007bff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EG_toppers">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
     
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1228,6 +1237,215 @@
             font-size: 15px;
         }
 
+        /* PWA & GSM / Mobile Responsive Enhancements */
+        .mobile-company-sub {
+            display: none;
+            font-size: 11px;
+            font-weight: 500;
+            color: #64748b;
+            margin-top: 2px;
+            max-width: 135px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .mobile-filters-toggle {
+            display: none;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 14px;
+            background: #f8fafc;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+        }
+
+        .collapsible-filters-area {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .mobile-eg-launch-btn {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: linear-gradient(135deg, #007bff 0%, #0056d2 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 14px 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 123, 255, 0.28);
+        }
+
+        .btn-install-pwa {
+            display: none;
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 10px 14px;
+                padding-top: max(10px, env(safe-area-inset-top));
+                gap: 8px;
+            }
+            .header-title {
+                gap: 10px;
+            }
+            .header-title i {
+                font-size: 21px;
+            }
+            .header-title h1 {
+                font-size: 16px;
+            }
+            .header-title p,
+            .hide-on-mobile {
+                display: none !important;
+            }
+            .btn-refresh-live,
+            .btn-install-pwa {
+                padding: 6px 10px;
+                font-size: 11.5px;
+            }
+            .main-container,
+            .main-container.drawer-open {
+                padding: 10px;
+                padding-right: 10px !important;
+                gap: 12px;
+            }
+            .screener-card {
+                padding: 12px;
+                gap: 10px;
+            }
+            .search-wrapper {
+                min-width: 100%;
+                max-width: 100%;
+            }
+            .search-input {
+                font-size: 16px; /* voorkomt ongewenst inzoomen op iOS */
+                padding: 9px 12px 9px 38px;
+            }
+            #profileSelect {
+                min-width: 0 !important;
+                width: 100%;
+                font-size: 14px !important;
+            }
+            .mobile-profile-wrap {
+                width: 100%;
+            }
+            .mobile-filters-toggle {
+                display: flex;
+            }
+            .collapsible-filters-area {
+                display: none;
+            }
+            .collapsible-filters-area.expanded {
+                display: flex;
+            }
+            .screener-params-grid {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 10px;
+                gap: 10px;
+            }
+            .param-input {
+                font-size: 16px;
+                padding: 6px 22px 6px 8px;
+            }
+            .table-card {
+                max-height: none;
+            }
+            .col-hide-mobile,
+            .col-industry {
+                display: none !important;
+            }
+            .mobile-company-sub {
+                display: block;
+            }
+            th {
+                padding: 9px 8px;
+                font-size: 10.5px;
+            }
+            td {
+                padding: 10px 8px;
+                font-size: 12.5px;
+            }
+            .row-eg-link {
+                opacity: 1;
+                background: #eff6ff;
+                color: var(--color-primary);
+                border: 1px solid #bfdbfe;
+                border-radius: 6px;
+                padding: 5px 7px;
+                font-size: 11.5px;
+            }
+            /* Fullscreen Mobile Sheet Drawer */
+            .drawer-panel {
+                width: 100vw !important;
+                min-width: 0 !important;
+                top: 0;
+                height: 100dvh;
+                z-index: 250;
+                border-left: none;
+                transform: translateY(100%);
+            }
+            .drawer-panel.open {
+                transform: translateY(0);
+            }
+            .drawer-resizer,
+            .drawer-desktop-only {
+                display: none !important;
+            }
+            .drawer-header {
+                padding: 12px 16px;
+                padding-top: max(12px, env(safe-area-inset-top));
+            }
+            .drawer-tabs {
+                padding: 8px 14px;
+            }
+            .drawer-tab-btn {
+                flex: 1;
+                justify-content: center;
+                padding: 8px 10px;
+            }
+            .drawer-body {
+                padding: 14px;
+                padding-bottom: max(24px, env(safe-area-inset-bottom));
+                gap: 14px;
+            }
+            .mobile-eg-launch-btn {
+                display: flex;
+            }
+            .mobile-only-controls {
+                display: flex !important;
+            }
+            .show-on-mobile-inline {
+                display: inline !important;
+            }
+            .easygrowth-url-box {
+                display: none;
+            }
+            .easygrowth-toolbar {
+                justify-content: flex-end;
+                padding: 6px 12px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1240,15 +1458,16 @@
                 <p>High-Fidelity Real-time Calculations & Deep comparative Analysis</p>
             </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <button class="btn-sync-window" id="btnSyncWindow" onclick="toggleWindowSync()" title="Open en synchroniseer EasyGrowth op een 2e scherm of apart tabblad">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="btn-install-pwa" id="btnInstallPwa" onclick="installPwaApp()" title="Installeer EG_toppers als app op je startscherm">
+                <i class="fa-solid fa-mobile-screen-button"></i> <span>Installeer App</span>
+            </button>
+            <button class="btn-sync-window hide-on-mobile" id="btnSyncWindow" onclick="toggleWindowSync()" title="Open en synchroniseer EasyGrowth op een 2e scherm of apart tabblad">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> <span id="syncBtnText">Koppel 2e Scherm</span>
             </button>
-            <button class="btn-refresh-live" id="btnLiveSync" onclick="refreshLiveApiData()" title="Ververs alle 2.089 aandelen live via de EasyGrowth API">
-                <i class="fa-solid fa-arrows-rotate"></i> <span id="refreshBtnText">Live Sync API</span>
-            </button>
-            <span class="badge-sector" style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 12px; font-size: 12px;">
-                <i class="fa-solid fa-cloud me-1"></i> EasyGrowth Cloud (2.089 Aandelen)
+            <span class="badge-sector" id="headerUpdateBadge" style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 6px 11px; font-size: 11.5px; text-transform: none;">
+                <i class="fa-solid fa-clock-rotate-left" style="margin-right: 4px;"></i>
+                <span class="hide-on-mobile" id="headerUniverseCount">2.089 Aandelen • </span><span id="headerLastUpdated">Update: --</span>
             </span>
         </div>
     </header>
@@ -1267,8 +1486,8 @@
                         <input type="text" class="search-input" id="searchInput" placeholder="Zoek op symbool, naam, sector...">
                     </div>
 
-                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <select class="filter-select" id="industryFilter">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; width: auto;">
+                        <select class="filter-select hide-on-mobile" id="industryFilter" onchange="syncMobileIndustry(this.value)">
                             <option value="">Alle Sectoren</option>
                         </select>
 
@@ -1287,28 +1506,28 @@
 
                 <!-- Profiles & Presets Bar with Dropdown -->
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--border-glass); padding-top: 12px;">
-                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                        <span style="font-size: 11.5px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex: 1;">
+                        <span class="hide-on-mobile" style="font-size: 11.5px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
                             <i class="fa-solid fa-layer-group" style="color: var(--color-primary);"></i> PROFIEL:
                         </span>
                         
                         <!-- Dropdown List for Profiles -->
-                        <div style="position: relative; display: inline-flex; align-items: center;">
+                        <div class="mobile-profile-wrap" style="position: relative; display: inline-flex; align-items: center;">
                             <select class="filter-select" id="profileSelect" onchange="onProfileSelectChange(this.value)" style="padding: 8px 34px 8px 14px; font-size: 13.5px; font-weight: 600; min-width: 260px; border-radius: 8px; background: #eff6ff; border-color: #bfdbfe; color: var(--color-primary); cursor: pointer;">
                                 <!-- Dynamically populated by JS -->
                             </select>
                         </div>
 
-                        <button class="btn-eg-tool" onclick="openSaveProfileModal()" title="Sla huidige filterinstellingen op als nieuw profiel" style="padding: 7px 13px; font-size: 12px; background: #f0fdf4; border-color: #bbf7d0; color: #16a34a;">
+                        <button class="btn-eg-tool hide-on-mobile" onclick="openSaveProfileModal()" title="Sla huidige filterinstellingen op als nieuw profiel" style="padding: 7px 13px; font-size: 12px; background: #f0fdf4; border-color: #bbf7d0; color: #16a34a;">
                             <i class="fa-solid fa-floppy-disk"></i> Profiel Opslaan
                         </button>
 
-                        <button class="btn-eg-tool" onclick="openManageProfilesModal()" title="Beheer, bewerk of verwijder profielen in het lijstje" style="padding: 7px 12px; font-size: 12px;">
+                        <button class="btn-eg-tool hide-on-mobile" onclick="openManageProfilesModal()" title="Beheer, bewerk of verwijder profielen in het lijstje" style="padding: 7px 12px; font-size: 12px;">
                             <i class="fa-solid fa-gear"></i> Beheer Lijst
                         </button>
                     </div>
 
-                    <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+                    <div class="hide-on-mobile" style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
                         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12.5px; color: var(--text-secondary); user-select: none;">
                             <input type="checkbox" id="chkRequireFullHistory" onchange="onParamChange()" style="cursor: pointer; accent-color: var(--color-success);" checked>
                             <span id="labelRequireFullHistory" style="color: #16a34a; font-weight: 600;">Alleen bedrijven met >= 10 jaar historie</span>
@@ -1320,6 +1539,38 @@
                         </label>
                     </div>
                 </div>
+
+                <!-- GSM Toggle Button for Advanced Parameters -->
+                <button type="button" class="mobile-filters-toggle" id="btnMobileFilters" onclick="toggleMobileFilters()">
+                    <span><i class="fa-solid fa-sliders me-1" style="color: var(--color-primary);"></i> Filters &amp; profielopties aanpassen</span>
+                    <i class="fa-solid fa-chevron-down" id="mobileFiltersChevron"></i>
+                </button>
+
+                <div class="collapsible-filters-area" id="collapsibleFiltersArea">
+                    <!-- GSM-only extra controls (Sector, Save/Manage Profile, Checkboxes) -->
+                    <div class="mobile-only-controls" style="display: none; flex-direction: column; gap: 10px;">
+                        <select class="filter-select" id="industryFilterMobile" onchange="syncDesktopIndustry(this.value)" style="width: 100%;">
+                            <option value="">Alle Sectoren</option>
+                        </select>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-eg-tool" onclick="openSaveProfileModal()" style="flex: 1; justify-content: center; background: #f0fdf4; border-color: #bbf7d0; color: #16a34a;">
+                                <i class="fa-solid fa-floppy-disk"></i> Opslaan
+                            </button>
+                            <button class="btn-eg-tool" onclick="openManageProfilesModal()" style="flex: 1; justify-content: center;">
+                                <i class="fa-solid fa-gear"></i> Beheer Profielen
+                            </button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px; padding: 4px 2px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary);">
+                                <input type="checkbox" id="chkRequireFullHistoryMobile" onchange="onMobileCheckboxChange()" style="accent-color: var(--color-success);" checked>
+                                <span style="color: #16a34a; font-weight: 600;">Alleen bedrijven met volledige historie</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary);">
+                                <input type="checkbox" id="chkExcludeCyclicalMobile" onchange="onMobileCheckboxChange()" style="accent-color: var(--color-primary);" checked>
+                                <span>Cyclische sectoren uitsluiten</span>
+                            </label>
+                        </div>
+                    </div>
 
                 <!-- Parameters Grid with 'Any' Options -->
                 <div class="screener-params-grid">
@@ -1394,6 +1645,7 @@
                             <span class="param-unit">%</span>
                         </div>
                     </div>
+                    </div>
                 </div>
 
                 <!-- Footer: Result Counter & Action Buttons -->
@@ -1402,14 +1654,14 @@
                         <span class="badge-results" id="badgeResultsCount">
                             <i class="fa-solid fa-circle-check"></i> <span id="resultsCountText">Gevonden: 0 aandelen</span>
                         </span>
-                        <span class="save-indicator" id="saveIndicator">
+                        <span class="save-indicator hide-on-mobile" id="saveIndicator">
                             <i class="fa-solid fa-check-double"></i> Onthouden in LocalStorage
                         </span>
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <button class="btn-copy-tickers" onclick="copyFilteredTickers()" title="Kopieer alle gefilterde symbolen direct als kommagescheiden lijst zonder spaties">
-                            <i class="fa-solid fa-copy"></i> Kopieer Tickers (CSV)
+                            <i class="fa-solid fa-copy"></i> <span class="hide-on-mobile">Kopieer Tickers (CSV)</span><span class="show-on-mobile-inline" style="display:none;">CSV</span>
                         </button>
                     </div>
                 </div>
@@ -1422,13 +1674,13 @@
                         <thead>
                             <tr id="tableHeaders">
                                 <th onclick="sortTable('Symbol')">Symbol <i class="fa-solid fa-sort"></i></th>
-                                <th onclick="sortTable('Name')">Company <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-hide-mobile" onclick="sortTable('Name')">Company <i class="fa-solid fa-sort"></i></th>
                                 <th class="col-industry" onclick="sortTable('Industry')">Industry <i class="fa-solid fa-sort"></i></th>
-                                <th onclick="sortTable('Price')" style="text-align: right;">Price <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-hide-mobile" onclick="sortTable('Price')" style="text-align: right;">Price <i class="fa-solid fa-sort"></i></th>
                                 <th onclick="sortTable('ROIC')" style="text-align: center;" title="Return on Invested Capital">ROIC <i class="fa-solid fa-sort"></i></th>
-                                <th onclick="sortTable('RevGrowth')" style="text-align: center;" title="Omzetgroei">Omzet <i class="fa-solid fa-sort"></i></th>
-                                <th onclick="sortTable('EPSGrowth')" style="text-align: center;" title="Winstgroei (EPS)">Winst <i class="fa-solid fa-sort"></i></th>
-                                <th onclick="sortTable('NetProfitMargin')" style="text-align: center;" title="Nettowinstmarge">Marge <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-hide-mobile" onclick="sortTable('RevGrowth')" style="text-align: center;" title="Omzetgroei">Omzet <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-hide-mobile" onclick="sortTable('EPSGrowth')" style="text-align: center;" title="Winstgroei (EPS)">Winst <i class="fa-solid fa-sort"></i></th>
+                                <th class="col-hide-mobile" onclick="sortTable('NetProfitMargin')" style="text-align: center;" title="Nettowinstmarge">Marge <i class="fa-solid fa-sort"></i></th>
                                 <th onclick="sortTable('PriceGrowth')" style="text-align: center;" id="thColPriceGrowth">Koersgr. <i class="fa-solid fa-sort"></i></th>
                                 <th onclick="sortTable('TK')" style="text-align: center;" id="thColTk">TK <i class="fa-solid fa-sort"></i></th>
                             </tr>
@@ -1451,16 +1703,16 @@
                     <p class="drawer-title-name" id="drawerName">Advanced Micro Devices, Inc.</p>
                 </div>
                 <div class="drawer-header-actions">
-                    <button class="header-icon-btn" onclick="setDrawerWidth('default')" title="Standaard breedte (580px)">
+                    <button class="header-icon-btn drawer-desktop-only" onclick="setDrawerWidth('default')" title="Standaard breedte (580px)">
                         <i class="fa-solid fa-compress"></i>
                     </button>
-                    <button class="header-icon-btn" onclick="setDrawerWidth('50%')" title="50/50 Split Screen (Naast elkaar)">
+                    <button class="header-icon-btn drawer-desktop-only" onclick="setDrawerWidth('50%')" title="50/50 Split Screen (Naast elkaar)">
                         <i class="fa-solid fa-table-columns"></i>
                     </button>
-                    <button class="header-icon-btn" onclick="setDrawerWidth('fullscreen')" title="Brede weergave (Groot)">
+                    <button class="header-icon-btn drawer-desktop-only" onclick="setDrawerWidth('fullscreen')" title="Brede weergave (Groot)">
                         <i class="fa-solid fa-expand"></i>
                     </button>
-                    <button class="header-icon-btn" onclick="openEasygrowthWindow()" title="Openen in gekoppeld extern venster (2e scherm)">
+                    <button class="header-icon-btn drawer-desktop-only" onclick="openEasygrowthWindow()" title="Openen in gekoppeld extern venster (2e scherm)">
                         <i class="fa-solid fa-arrow-up-right-from-square" style="color: var(--color-primary);"></i>
                     </button>
                     <div class="close-btn" onclick="closeDrawer()" title="Sluiten">
@@ -1482,6 +1734,19 @@
             <div style="display: flex; flex: 1; min-height: 0; width: 100%; overflow: hidden;">
                 <div class="drawer-body" id="drawerBodyToppers" style="display: none;">
                     
+                    <!-- GSM Direct EasyGrowth App / Browser Knop -->
+                    <a id="mobileEgAppBtn" href="https://www.easygrowth.org" target="_blank" rel="noopener" class="mobile-eg-launch-btn">
+                        <div>
+                            <div style="font-size: 14.5px; font-weight: 800;">
+                                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right: 6px;"></i> Open <span id="mobileEgSymText">Aandeel</span> in EasyGrowth
+                            </div>
+                            <div style="font-size: 11px; opacity: 0.9; font-weight: 500; margin-top: 3px;">
+                                Opent direct in de EasyGrowth webapp / browser (volledig scherm &amp; eigen login)
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 16px;"></i>
+                    </a>
+
                     <!-- 1. Dynamische Profiel Uitleg & Filosofie Kaart -->
                     <div id="profileExplanationContainer"></div>
 
@@ -2390,11 +2655,15 @@
             // Populate & update Profile Dropdown
             populateProfileDropdown();
 
-            // Checkboxes
+            // Checkboxes (desktop & mobile)
             const chk = document.getElementById("chkExcludeCyclical");
             if (chk) chk.checked = screenerState.excludeCyclical;
             const chkHist = document.getElementById("chkRequireFullHistory");
             if (chkHist) chkHist.checked = screenerState.requireFullHistory !== false;
+            const chkM = document.getElementById("chkExcludeCyclicalMobile");
+            if (chkM) chkM.checked = screenerState.excludeCyclical;
+            const chkHistM = document.getElementById("chkRequireFullHistoryMobile");
+            if (chkHistM) chkHistM.checked = screenerState.requireFullHistory !== false;
 
             const lblHist = document.getElementById("labelRequireFullHistory");
             if (lblHist) {
@@ -2434,89 +2703,6 @@
                     }
                 }
             });
-        }
-
-        // Live API Refresh for all companies
-        async function refreshLiveApiData() {
-            const btn = document.getElementById("btnLiveSync");
-            const btnText = document.getElementById("refreshBtnText");
-            if (btnText) btnText.textContent = "Bezig met laden...";
-            if (btn) btn.style.opacity = "0.7";
-
-            try {
-                const res = await fetch(`${BASE_API_URL}/searchStocks`);
-                const rawStocks = await res.json();
-                const symbols = rawStocks.map(s => s.Company || s.symbol).filter(Boolean);
-
-                const chunkSize = 150;
-                const chunks = [];
-                for (let i = 0; i < symbols.length; i += chunkSize) {
-                    chunks.push(symbols.slice(i, i + chunkSize));
-                }
-
-                const batchPromises = chunks.map(chunk => 
-                    fetch(`${BASE_API_URL}/readstocks?user_name=ivo&stocklist=${encodeURIComponent(chunk.join(','))}`)
-                        .then(r => r.json())
-                        .catch(() => [])
-                );
-
-                const results = await Promise.all(batchPromises);
-                const flattened = results.flat();
-
-                window.egLiveUniverse = flattened.map(d => ({
-                    Symbol: (d.Company || d.Symbol || '').trim().toUpperCase(),
-                    Name: d.Name || d.Company,
-                    Industry: d.Industry || 'N/A',
-                    Sector: d.Sector || 'N/A',
-                    Price: parseFloat(d.Value || d.FairValue || d.HoogstePrijs || 0),
-                    ROIC: parseFloat(d.AvgRoic5y || 0),
-                    EPSGrowth: Math.max(parseFloat(d.LTEpsGrowth || 0), parseFloat(d.WpaGroei || 0)),
-                    RevGrowth: Math.max(parseFloat(d.RevGrowth5y || 0), parseFloat(d.OmzetGroei || 0)),
-                    NetProfitMargin: parseFloat(d.NetProfitMargin || 0),
-                    Perf1Y: parseFloat(d.Perf1Y || 0),
-                    Perf3Y: parseFloat(d.Perf3Y || 0),
-                    Perf5Y: parseFloat(d.Perf5Y || 0),
-                    DebtEquity: parseFloat(d.DebtEquityRatio || 0),
-                    CurrentRatio: parseFloat(d.CurrentRatio || 0),
-                    FairValue: parseFloat(d.FairValue || 0),
-                    Rating: parseFloat(d.Rating || 50)
-                }));
-
-                if (btnText) btnText.textContent = "Live Gesynchroniseerd ✓";
-                filterAndRender();
-            } catch(e) {
-                console.error("Live API Sync mislukt:", e);
-                if (btnText) btnText.textContent = "Sync Mislukt (Offline Data)";
-            }
-
-            setTimeout(() => {
-                if (btnText) btnText.textContent = "Live Sync API";
-                if (btn) btn.style.opacity = "1";
-            }, 3000);
-        }
-
-        // Fetch quotes on-demand for candidates and calculate metrics
-        async function enrichCandidatesWithQuotes(candidates, days) {
-            const needQuotes = candidates.filter(c => !window.quoteCache[c.Symbol]);
-            if (needQuotes.length === 0) return;
-
-            let updated = false;
-            const fetchPromises = needQuotes.slice(0, 50).map(c => 
-                fetch(`${BASE_API_URL}/stockquotes?symbol=${encodeURIComponent(c.Symbol)}`)
-                    .then(r => r.json())
-                    .then(q => {
-                        if (q && q.length > 0) {
-                            window.quoteCache[c.Symbol] = q.map(x => parseFloat(x[4]));
-                            updated = true;
-                        }
-                    })
-                    .catch(() => {})
-            );
-
-            await Promise.all(fetchPromises);
-            if (updated) {
-                filterAndRender();
-            }
         }
 
         // Active filtered symbol list for 1-click copy
@@ -2708,7 +2894,7 @@
             finalFiltered.forEach(item => {
                 const tr = document.createElement("tr");
                 if (selectedSymbol === item.Symbol) tr.classList.add("selected");
-                tr.onclick = () => selectStock(item);
+                tr.onclick = () => selectStock(item, true);
 
                 const roicColor = item.ROIC >= 20 ? "#16a34a" : (item.ROIC >= 12 ? "#007bff" : "#64748b");
                 const revColor = item.RevGrowth >= 20 ? "#16a34a" : (item.RevGrowth >= 12 ? "#007bff" : "#64748b");
@@ -2721,36 +2907,36 @@
                 tr.innerHTML = `
                     <td class="bold-symbol">
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                            <span>${item.Symbol}</span>
-                            <a href="https://www.easygrowth.org/company/${encodeURIComponent(item.Symbol)}" target="EasyGrowthWindow" title="Bekijk direct op EasyGrowth.org" class="row-eg-link" onclick="event.stopPropagation();">
+                            <div style="min-width: 0;">
+                                <span>${item.Symbol}</span>
+                                <div class="mobile-company-sub" title="${item.Name}">${item.Name}</div>
+                            </div>
+                            <a href="https://www.easygrowth.org/company/${encodeURIComponent(item.Symbol)}" target="_blank" rel="noopener" title="Open direct in EasyGrowth" class="row-eg-link" onclick="event.stopPropagation();">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                         </div>
                     </td>
-                    <td class="name-cell company-cell">
+                    <td class="name-cell company-cell col-hide-mobile">
                         <div class="company-name" title="${item.Name}">${item.Name}</div>
                         <div class="company-industry-sub" title="${item.Industry}">${item.Industry}</div>
                     </td>
                     <td class="name-cell col-industry" title="${item.Industry}">${item.Industry}</td>
-                    <td style="text-align: right; font-weight:700;">$${item.Price.toFixed(2)}</td>
+                    <td class="col-hide-mobile" style="text-align: right; font-weight:700;">$${item.Price.toFixed(2)}</td>
                     <td style="text-align: center; font-weight: 700; color: ${roicColor};">${item.ROIC.toFixed(1)}%</td>
-                    <td style="text-align: center; font-weight: 700; color: ${revColor};">${item.RevGrowth > 0 ? '+' : ''}${item.RevGrowth.toFixed(1)}%</td>
-                    <td style="text-align: center; font-weight: 700; color: ${epsColor};">${item.EPSGrowth > 0 ? '+' : ''}${item.EPSGrowth.toFixed(1)}%</td>
-                    <td style="text-align: center; font-weight: 700; color: ${marginColor};">${item.NetProfitMargin.toFixed(1)}%</td>
+                    <td class="col-hide-mobile" style="text-align: center; font-weight: 700; color: ${revColor};">${item.RevGrowth > 0 ? '+' : ''}${item.RevGrowth.toFixed(1)}%</td>
+                    <td class="col-hide-mobile" style="text-align: center; font-weight: 700; color: ${epsColor};">${item.EPSGrowth > 0 ? '+' : ''}${item.EPSGrowth.toFixed(1)}%</td>
+                    <td class="col-hide-mobile" style="text-align: center; font-weight: 700; color: ${marginColor};">${item.NetProfitMargin.toFixed(1)}%</td>
                     <td id="retCell_${symId}" style="text-align: center; font-weight: 700; color: ${priceColor};">${item.computedPriceGrowth > 0 ? '+' : ''}${item.computedPriceGrowth.toFixed(1)}%</td>
                     <td id="tkCell_${symId}" style="text-align: center; font-weight: 800; color: ${tkColor}; font-size: 15px;">${item.computedTK.toFixed(1)}</td>
                 `;
                 tableBody.appendChild(tr);
             });
 
-            // Automatically sync selected stock (or first in table) to detail drawer & EasyGrowth
+            // Automatically sync selected stock on desktop; on GSM keep the list visible until tapped
             if (finalFiltered.length > 0) {
                 const stockToSelect = finalFiltered.find(x => x.Symbol === selectedSymbol) || finalFiltered[0];
-                selectStock(stockToSelect);
+                selectStock(stockToSelect, !isMobileView());
             }
-
-            // Asynchronously enrich qualifying candidates with live quotes
-            enrichCandidatesWithQuotes(candidates.slice(0, 50), days);
         }
 
         // 1-Click Copy Tickers without spaces
@@ -2802,8 +2988,43 @@
             filterAndRender();
         }
 
+        function isMobileView() {
+            return window.innerWidth <= 768;
+        }
+
+        function toggleMobileFilters() {
+            const area = document.getElementById("collapsibleFiltersArea");
+            const chev = document.getElementById("mobileFiltersChevron");
+            if (!area) return;
+            const expanded = area.classList.toggle("expanded");
+            if (chev) chev.style.transform = expanded ? "rotate(180deg)" : "rotate(0deg)";
+        }
+
+        function syncMobileIndustry(val) {
+            const mob = document.getElementById("industryFilterMobile");
+            if (mob && mob.value !== val) mob.value = val;
+        }
+
+        function syncDesktopIndustry(val) {
+            const desk = document.getElementById("industryFilter");
+            if (desk) {
+                desk.value = val;
+                filterAndRender();
+            }
+        }
+
+        function onMobileCheckboxChange() {
+            const chkHistM = document.getElementById("chkRequireFullHistoryMobile");
+            const chkCycM = document.getElementById("chkExcludeCyclicalMobile");
+            const chkHist = document.getElementById("chkRequireFullHistory");
+            const chkCyc = document.getElementById("chkExcludeCyclical");
+            if (chkHist && chkHistM) chkHist.checked = chkHistM.checked;
+            if (chkCyc && chkCycM) chkCyc.checked = chkCycM.checked;
+            onParamChange();
+        }
+
         // Drawer handling & selection
-        function selectStock(item) {
+        function selectStock(item, openDrawer = true) {
             selectedSymbol = item.Symbol;
             currentSelectedStock = item;
             
@@ -2818,10 +3039,19 @@
             });
 
             const drawer = document.getElementById("detailDrawer");
-            drawer.classList.add("open");
-            const currentW = drawer.style.width || '50vw';
-            document.documentElement.style.setProperty('--drawer-width', currentW);
-            document.getElementById("mainContainer").classList.add("drawer-open");
+            const wasOpen = drawer.classList.contains("open");
+            if (openDrawer) {
+                if (isMobileView() && !wasOpen) {
+                    // Op GSM standaard openen op Profiel & Factoren + directe EasyGrowth-knop (i.p.v. iframe)
+                    activeDrawerTab = 'toppers';
+                }
+                drawer.classList.add("open");
+                if (!isMobileView()) {
+                    const currentW = drawer.style.width || '50vw';
+                    document.documentElement.style.setProperty('--drawer-width', currentW);
+                    document.getElementById("mainContainer").classList.add("drawer-open");
+                }
+            }
 
             document.getElementById("drawerSymbol").textContent = item.Symbol;
             document.getElementById("drawerName").textContent = item.Name;
@@ -2838,10 +3068,15 @@
 
             renderProfileAndFactors(item);
 
-            // EasyGrowth Sync (Iframe & URLs)
+            // EasyGrowth Sync (App/Browser links & Iframe)
             const egUrl = `https://www.easygrowth.org/company/${encodeURIComponent(item.Symbol)}`;
+            const mobBtn = document.getElementById("mobileEgAppBtn");
+            if (mobBtn) mobBtn.href = egUrl;
+            const mobSym = document.getElementById("mobileEgSymText");
+            if (mobSym) mobSym.textContent = item.Symbol;
+
             const egIframe = document.getElementById("easygrowthIframe");
-            if (egIframe && egIframe.src !== egUrl) {
+            if (egIframe && (!isMobileView() || activeDrawerTab === 'easygrowth') && egIframe.src !== egUrl) {
                 egIframe.src = egUrl;
             }
             const egUrlLabel = document.getElementById("easygrowthUrlLabel");
@@ -2855,7 +3090,9 @@
                 syncWindow.location.href = egUrl;
             }
 
-            switchDrawerTab(activeDrawerTab);
+            if (openDrawer || wasOpen) {
+                switchDrawerTab(activeDrawerTab);
+            }
         }
 
         function closeDrawer() {
@@ -2927,7 +3164,12 @@
                 toppersContent.style.display = 'none';
                 egContent.style.display = 'flex';
                 egContent.style.flex = '1';
-                if (!drawer.style.width) updateDrawerWidth('50vw');
+                if (!isMobileView() && !drawer.style.width) updateDrawerWidth('50vw');
+                if (currentSelectedStock) {
+                    const egIframe = document.getElementById("easygrowthIframe");
+                    const egUrl = `https://www.easygrowth.org/company/${encodeURIComponent(currentSelectedStock.Symbol)}`;
+                    if (egIframe && egIframe.src !== egUrl) egIframe.src = egUrl;
+                }
             }
             window.dispatchEvent(new Event('resize'));
         }
@@ -2971,18 +3213,39 @@
         document.addEventListener("DOMContentLoaded", () => {
             const universe = getStocksUniverse();
 
-            // Populate Industry dropdown
+            // Toon aantal aandelen & datum van laatste automatische data-update in de header
+            const cntSpan = document.getElementById("headerUniverseCount");
+            if (cntSpan && universe.length > 0) {
+                cntSpan.textContent = `${universe.length.toLocaleString('nl-NL')} Aandelen • `;
+            }
+            const updSpan = document.getElementById("headerLastUpdated");
+            if (updSpan) {
+                updSpan.textContent = window.egLastUpdated ? `Update: ${window.egLastUpdated}` : "EasyGrowth Data";
+            }
+
+            // Populate Industry dropdown (desktop & mobile)
             const industries = [...new Set(universe.map(item => item.Industry).filter(i => i && i !== 'N/A'))].sort();
             const industryFilter = document.getElementById("industryFilter");
+            const industryFilterMobile = document.getElementById("industryFilterMobile");
             if (industryFilter) {
                 industries.forEach(i => {
                     const opt = document.createElement("option");
                     opt.value = i;
                     opt.textContent = i;
                     industryFilter.appendChild(opt);
+                    if (industryFilterMobile) {
+                        const optM = opt.cloneNode(true);
+                        industryFilterMobile.appendChild(optM);
+                    }
                 });
                 industryFilter.addEventListener("change", filterAndRender);
             }
+
+            // Sync mobile checkboxes with initial screenerState
+            const chkHistM = document.getElementById("chkRequireFullHistoryMobile");
+            const chkCycM = document.getElementById("chkExcludeCyclicalMobile");
+            if (chkHistM) chkHistM.checked = screenerState.requireFullHistory !== false;
+            if (chkCycM) chkCycM.checked = !!screenerState.excludeCyclical;
 
             const searchInput = document.getElementById("searchInput");
             if (searchInput) {
@@ -3051,6 +3314,35 @@
                 }
             });
         });
+
+        // Progressive Web App (PWA) Service Worker & Install Prompt
+        let deferredPwaPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPwaPrompt = e;
+            const btn = document.getElementById('btnInstallPwa');
+            if (btn) btn.style.display = 'inline-flex';
+        });
+
+        async function installPwaApp() {
+            if (!deferredPwaPrompt) return;
+            deferredPwaPrompt.prompt();
+            await deferredPwaPrompt.userChoice;
+            deferredPwaPrompt = null;
+            const btn = document.getElementById('btnInstallPwa');
+            if (btn) btn.style.display = 'none';
+        }
+
+        window.addEventListener('appinstalled', () => {
+            const btn = document.getElementById('btnInstallPwa');
+            if (btn) btn.style.display = 'none';
+        });
+
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
+        }
     </script>
 </body>
 </html>
